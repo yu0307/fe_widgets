@@ -16,12 +16,12 @@ class WidgetProvider {
     private function initBuiltinWidgets(){
         //we could use readdir to scan through the widget dir. But I don't like execution involving with I/O
         $baseWidgets=[
-            lib\fe_Widgets\WidgetGeneric::class,
-            lib\fe_Widgets\WidgetTable::class,
-            lib\fe_Widgets\WidgetChart::class,
-            lib\stock\wg_clock::class,
-            lib\stock\wg_weather::class,
-            lib\stock\wg_calendar::class
+            fe_Widgets\WidgetGeneric::class,
+            fe_Widgets\WidgetTable::class,
+            fe_Widgets\WidgetChart::class,
+            stock\wg_clock::class,
+            stock\wg_weather::class,
+            stock\wg_calendar::class
         ];
         foreach($baseWidgets as $widget){
             $this->bind($widget);
