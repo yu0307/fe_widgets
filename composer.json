@@ -1,0 +1,33 @@
+{
+    "name": "feiron/fe_widgets",
+    "description": "widget features for laraframe",
+    "type": "library",
+    "license": "Apache-2.0",
+    "require": {
+        "php": ">=7.2.1",
+        "laravel/framework": ">=8.0"
+    },
+    "require-dev": {
+        "php": ">=7.2.1",
+        "laravel/framework": ">=8.0"
+    },
+    "authors": [
+        {
+            "name": "Lucas",
+            "email": "yu0307@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "feiron\\fe_widgets\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "feiron\\fe_widgets\\feWidgetServiceProvider"
+            ]
+        }
+    }
+}
