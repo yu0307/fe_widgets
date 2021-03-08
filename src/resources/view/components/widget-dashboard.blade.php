@@ -15,7 +15,7 @@
         <template v-slot:widgetcontrols>
             <x-fe_theme::fe-modal id="dashboardWidgetControl" header-bg="dark">
                 <x-slot name="header">
-                    Site Available Widgets
+                    Available Widgets
                 </x-slot>
     
                 <x-slot name="footer">
