@@ -1,137 +1,118 @@
-#fe_widgetArea, #fe_widgetCtrls{
-    height: auto;
-    margin: 0px;
+#widget-container:hover #new_widget_area {
+  -webkit-animation-name: fadeInUp !important;
+  animation-name: fadeInUp !important;
 }
-.page-content{
-    padding-left: 15px !important;
-    padding-right: 15px !important;
-    padding-bottom: 50px !important;
+#widget-container #fe_widgetArea, #widget-container #fe_widgetCtrls {
+  height: auto;
+  margin: 0px;
 }
-.sortGhosting .panel{
-    border: 2px dashed #319db5 !important;
-    box-shadow: 0px 0px 5px 2px #afafaf !important;
-    margin-bottom: 16px !important;
+#widget-container #fe_widgetArea .fe_widget .panel .panel-header h3 {
+  max-width: 70%;
 }
-
-#fe_widgetArea .panel .panel-header.panel-controls .control-btn > a{
-    color:rgb(41, 41, 41) !important;
+#widget-container #fe_widgetArea .fe_widget .panel-header.bg-transparent {
+  position: absolute;
+  right: 15px;
+  width: 90%;
+  top: 15px;
+  mix-blend-mode: inherit;
 }
-#fe_widgetArea .panel .panel-header:hover .control-btn > a {
-    color: rgb(0, 0, 0) !important;
+#widget-container #fe_widgetArea .fe_widget .bg-transparent {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
 }
-
-#fe_widgetArea .panel div[class*='bg-'].panel-header.panel-controls .control-btn > a{
-    color:rgb(255, 255, 255) !important;
+#widget-container #fe_widgetArea .fe_widget .bg-transparent .panel-controls i {
+  color: gray !important;
 }
-#fe_widgetArea .panel div[class*='bg-'].panel-header.panel-header:hover .control-btn > a {
-    color: rgb(255, 255, 255) !important;
+#widget-container #fe_widgetArea .fe_widget .wg_main_cnt {
+  position: relative !important;
 }
-#fe_widgetArea .panel.maximized{
-    top: 0px;
-    padding-top: 0px;
+#widget-container #fe_widgetArea .fe_widget .panel-content .back {
+  position: absolute !important;
+  top: 0px;
+  left: 0px;
 }
-#fe_widgetArea .fe_widget{
-    max-height: 99%;
-    padding: 5px;
+#widget-container #fe_widgetArea .fe_widget .panel-content .back .panel {
+  padding: 10px;
+  background: none;
+  border: none;
+  box-shadow: none;
 }
-#fe_widgetArea .fe_widget .panel {
-    margin-bottom: 0px;
+#widget-container #fe_widgetArea .fe_widget .panel-content .back .btn {
+  position: absolute;
+  bottom: 10px;
 }
-
-#fe_widgetArea .fe_widget .panel-header{
-    min-height: 50px;
+#widget-container #fe_widgetArea .fe_widget .panel-content .back .btn.btn-success {
+  left: 10px;
 }
-
-#fe_widgetArea .fe_widget .panel-reload{
-    visibility: hidden !important;
+#widget-container #fe_widgetArea .fe_widget .panel-content .back .btn.btn-danger {
+  right: 0px;
 }
-
-#fe_widgetArea .fe_widget .panel-reload.visible{
-    visibility: visible !important;
+#widget-container #fe_widgetArea .fe_widget .panel.bg-primary .back .panel {
+  color: snow !important;
 }
-
-#new_widget_area{
-    left: 50%;
-    position: fixed;
-    bottom: 25px;
-    margin-left: -45px;
-    mix-blend-mode: multiply;
+#widget-container #new_widget_area {
+  left: 50%;
+  position: fixed;
+  bottom: 5px;
+  margin-left: -45px;
+  mix-blend-mode: multiply;
 }
-#new_widget_area #widget_add{
-    cursor: pointer;
+#widget-container #new_widget_area #widget_add {
+  cursor: pointer;
 }
-.page-content:hover #new_widget_area{
-    -webkit-animation-name: fadeInUp !important;
-    animation-name: fadeInUp !important;
+#widget-container #dashboardWidgetControl.in ~ #new_widget_area {
+  -webkit-animation-name: fadeOutDown !important;
+  animation-name: fadeOutDown !important;
 }
-
-#dashboardWidgetControl.in ~#new_widget_area {
-    -webkit-animation-name: fadeOutDown !important;
-    animation-name: fadeOutDown !important;
+#widget-container #fe_widget_desc {
+  min-height: 200px;
+  max-height: 80%;
+  overflow-y: auto;
 }
-#fe_widgetArea .fe_widget .panel .panel-header h3{
-    max-width: 70%;
+#widget-container #fe_widget_desc label {
+  font-size: 16px;
 }
-
-.fe_widget .bg-transparent{
-    box-shadow: none !important;
-    -webkit-box-shadow: none !important;
+#widget-container #fe_widget_desc .row {
+  width: 100%;
 }
-.fe_widget .bg-transparent .panel-controls i{
-    color: gray !important;
+#widget-container #fe_widget_desc input[type=radio] {
+  margin-right: 10px;
+  -webkit-appearance: radio !important;
 }
-
-.fe_widget .panel-header.bg-transparent{
-    position: absolute;
-    right: 15px;
-    width: 90%;
-    top: 15px;
-    mix-blend-mode: inherit;
+#widget-container .sortGhosting .panel {
+  border: 2px dashed #319db5 !important;
+  box-shadow: 0px 0px 5px 2px #afafaf !important;
+  margin-bottom: 16px !important;
 }
-.fe_widget .wg_main_cnt{
-    position: relative !important;
+#widget-container .fe_widget {
+  max-height: 99%;
+  padding: 5px;
 }
-.fe_widget .panel-content .back{
-    position: absolute !important;
-    top: 0px;
-    left: 0px;
+#widget-container .fe_widget .panel {
+  margin-bottom: 0px;
 }
-.fe_widget .panel-content .back .panel{
-    padding: 10px;
-    background: none;
-    border:none;
-    box-shadow: none;
-
+#widget-container .fe_widget .panel-header {
+  min-height: 50px;
 }
-.fe_widget .panel-content .back .btn{
-    position: absolute;
-    bottom: 10px;
+#widget-container .fe_widget .panel-reload {
+  visibility: hidden !important;
 }
-.fe_widget .panel-content .back .btn.btn-success{
-    left:10px;
+#widget-container .fe_widget .panel-reload.visible {
+  visibility: visible !important;
 }
-.fe_widget .panel-content .back .btn.btn-danger{
-    right:0px;
+#widget-container .panel .panel-header.panel-controls .control-btn > a {
+  color: #292929 !important;
 }
-.fe_widget .panel.bg-primary .back .panel{
-    color:snow !important;
+#widget-container .panel .panel-header:hover .control-btn > a {
+  color: black !important;
 }
-
-#fe_widget_desc{
-    min-height: 200px;
-    max-height: 80%;
-    overflow-y: auto;
+#widget-container .panel div[class*=bg-].panel-header.panel-controls .control-btn > a {
+  color: white !important;
 }
-#fe_widget_desc label{
-    font-size: 16px;
+#widget-container .panel div[class*=bg-].panel-header.panel-header:hover .control-btn > a {
+  color: white !important;
 }
-#fe_widget_desc .row{
-    width: 100%;
+#widget-container.maximized {
+  top: 0px;
+  padding-top: 0px;
 }
-
-.fe_widget input[type="radio"]{
-    margin-right: 10px;
-    -webkit-appearance: radio !important;
-}
-
-
