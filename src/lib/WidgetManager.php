@@ -2,11 +2,9 @@
 
 namespace feiron\fe_widgets\lib;
 
-use Illuminate\Support\Facades\Auth;
 use feiron\fe_widgets\models\userWidgetLayout;
 
 class WidgetManager {
-    private $app;
     private $AvailableWidgets;  //[WidgetDisplayName]=>Settings['widgetType','Description','widgetParam']
 
     public function __construct(\Illuminate\Foundation\Application $app){
@@ -74,6 +72,21 @@ class WidgetManager {
             'order'=> $counter,
             'settings'=> json_encode($widget['setting'])
         ]);
+    }
+
+    public function getUserWidgets($user){
+        $widgets=[];
+        foreach($this->loadLayout($user ?? auth()->user()) as $widget){
+            if(!empty($this->AvailableWidgets[$widget->widget_name]) && !empty($this->AvailableWidgets[$widget->widget_name]['widgetType'])){
+                $usrSetting= array_merge(($this->AvailableWidgets[$widget->widget_name]['widgetParam'] ?? []), (json_decode($widget->settings,true) ?? []));
+                $usrSetting['usr_key']= $widget->id;
+                array_push($widgets,app()->Widget->BuildWidget(
+                    $this->AvailableWidgets[$widget->widget_name]['widgetType'], 
+                    $usrSetting
+                )->serializeJson());
+            }
+        }
+        return $widgets;
     }
 
     public function renderUserWidgets($user){

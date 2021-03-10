@@ -17,8 +17,8 @@ class wg_clock extends Widget{
             'WidgetName'=>'clock',
             'Width'=>'2',
             'DataHeight'=>300,
-            'HeaderBackground'=> 'bg-transparent',
-            'WidgetBackground'=> 'bg-transparent',
+            // 'HeaderBackground'=> 'bg-transparent',
+            // 'WidgetBackground'=> 'bg-transparent',
             'HeaderIcon'=>false,
             'DisableDigital'=>false
         ];

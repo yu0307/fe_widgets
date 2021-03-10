@@ -1,70 +1,61 @@
-@if (false!==($AjaxLoad??false))
-    @php
-        unset($Ajax['AjaxJS']);
-    @endphp
-<script type="text/javascript">
-    AjaxWidgetPool['{{$ID}}']=@json($Ajax)
-</script>
-@endif
+<widgetframes
+    config='@json($config)'
+>
+    @if (false!==($config['AjaxLoad']??false))
+        @php
+            unset($config['Ajax']['AjaxJS']);
+        @endphp
+    <script type="text/javascript">
+        AjaxWidgetPool['{{$ID}}']=@json($config['Ajax'])
+    </script>
+    @endif
 
-@yield('Widget_InlineScript')
+    @yield('Widget_InlineScript')
 
-<div class="col-md-{{$Width??'4'}} {{$col}} fe_widget fe_widget_{{$Type}} " id="{{$ID}}" name="{{$WidgetName}}" usrKey="{{$usr_key}}">
-    <div class="panel {{$WidgetBackground??'bg-white'}}">
-            @if (true!==$DisableHeader)
-                <div class="panel-header {{(($DisableControls??false)?'':'panel-controls')}}  {{$HeaderBackground??'bg-primary'}} {{((empty($usrSettings)===true)?'':'HasSettingOutlet')}}">
-                    <h3>
-                        <i class="fa fa-{{$HeaderIcon??'star'}}"></i>
-                        @if(isset($Widget_header))
-                        {!! $Widget_header !!}
-                        @else
-                        @yield('Widget_header')
-                        @endif
-                    </h3>
-                </div>
-            @endif
-        <div class="panel-content">
-            <div class="withScroll wg_main_cnt" data-height="{{$DataHeight??'400'}}">
-                @if(!empty($Widget_contents))
-                {!! $Widget_contents !!}
-                @else
-                @yield('Widget_contents')
-                @endif
-            </div>
-        </div>
-        @if (true!==$DisableFooter)
-            <div class="panel-footer p-t-0 p-b-0 {{$FooterBackground??'bg-dark'}}">
-                @if(isset($Widget_footer))
-                {!! $Widget_footer !!}
-                @else
-                @yield('Widget_footer')
-                @endif
-            </div>
+    <slots slot=widget_header>
+        @if(isset($config['Widget_header']))
+            {!! $config['Widget_header'] !!}
+        @else
+            @yield('Widget_header')
         @endif
-    </div>
-</div>
-
+    </slots>
+    <slots slot=widget_contents>
+        @if(!empty($config['Widget_contents']))
+            {!! $config['Widget_contents'] !!}
+        @else
+            @yield('Widget_contents')
+        @endif
+    </slots>
+    <slots slot=widget_footer>
+        @if(isset($config['Widget_footer']))
+            {!! $config['Widget_footer'] !!}
+        @else
+            @yield('Widget_footer')
+        @endif
+    </slots>
+</widgetframes>
 
 @push('JsBeforeReady')
-    @if ((!empty($usrSettings)===true) || (!empty($widgetConfig)===true))
-        DashBoardWidgetBank['{{'wg_'.$usr_key}}']={
-                        settings:@json($usrSettings??[]),
-                        widgetConfig:@json($widgetConfig??[])};
+    @if ((!empty($config['usrSettings'])===true) || (!empty($config['widgetConfig'])===true))
+        DashBoardWidgetBank['{{'wg_'.$config['usr_key']}}']={
+                        settings:@json($config['usrSettings']??[]),
+                        widgetConfig:@json($config['widgetConfig']??[])
+                    };
     @endif
     @yield('Widget_JsBeforeReady');
 @endpush
 
 @php
-    foreach ($headerscripts as $script){
+    foreach ($config['headerscripts'] as $script){
         app()->FeFrame->enqueueResource($script['file'],'headerscripts');
     }
-    foreach ($headerstyles as $script){
+    foreach ($config['headerstyles'] as $script){
         app()->FeFrame->enqueueResource($script['file'],'headerstyles');
     }
-    foreach ($footerscripts as $script){
+    foreach ($config['footerscripts'] as $script){
         app()->FeFrame->enqueueResource($script['file'],'footerscripts');
     }
-    foreach ($footerstyles as $script){
+    foreach ($config['footerstyles'] as $script){
         app()->FeFrame->enqueueResource($script['file'],'footerstyles');
     }
 @endphp

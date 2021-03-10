@@ -8,7 +8,7 @@
             <li class="jquery-clock-min"></li>
             <li class="jquery-clock-hour"></li>
         </ul>
-        @if ($DisableDigital===false)
+        @if ($config['DisableDigital']===false)
             <div class="row wg_clock_digital">
                 <div class="col-md-2"></div>
                 <div class="col-md-8 col-sm-12 m-t-10">

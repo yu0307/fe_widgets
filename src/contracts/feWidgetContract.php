@@ -30,5 +30,6 @@ interface feWidgetContract{
     public function getHeaderStyle(): array;
     public function getFooterScripts(): array;
     public function getFooterStyle(): array;
+    public function serializeJson();
 }
 ?>

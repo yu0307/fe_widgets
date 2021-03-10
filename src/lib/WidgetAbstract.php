@@ -28,7 +28,7 @@ abstract class WidgetAbstract implements Widget{
             'Widget_header'     => '',
             'Widget_footer'     => '',
             'DisableControls'   => false,
-            'Width'             => '3',
+            'Width'             => '4',
             'col'             => '',
             'DataHeight'        => '400',
             'Widget_contents'   => '',
@@ -171,8 +171,7 @@ abstract class WidgetAbstract implements Widget{
         $this->viewParameters['usrSettings']= $this->userSettingOutlet();
         $this->viewParameters['widgetConfig'] = $this->getWidgetSettings();
         $this->viewParameters['ID'] = $this->viewParameters['usr_key']?? $this->viewParameters['ID'];
-
-        return (false=== $this->view? View::make('fe_widgets::widgetFrame', $this->viewParameters): $this->view->with($this->viewParameters))->render();
+        return (false=== $this->view? View::make('fe_widgets::widgetFrame', ['config'=>$this->viewParameters]): $this->view->with(['config'=>$this->viewParameters]))->render();
     }
 
     //send ajax data to the client
@@ -201,6 +200,29 @@ abstract class WidgetAbstract implements Widget{
     //front end settings available to users.
     public static function userSettingOutlet(){
         return [];
+    }
+
+    public function serializeJson(){
+
+        if($this->viewParameters['AjaxLoad']===false && $this->viewParameters['WidgetData']!==false){
+            $this->viewParameters['WidgetData'] = (is_callable($this->viewParameters['WidgetData'])) ? $this->viewParameters['WidgetData']() : $this->dataFunction();
+            if (empty($this->viewParameters['WidgetData'])) {
+                $this->setWidgetContents('<h4 class="c-primary text-center text-capitalize align-middle">No data is available...</h4>');
+            }
+        }
+
+        $viewConfig =array_merge($this->viewParameters, [
+            'ID'=>$this->viewParameters['usr_key']?? $this->viewParameters['ID'],
+            'WidgetName'=>$this->WidgetName(),
+            'usrSettings'=>$this->userSettingOutlet(), 
+            'widgetConfig'=>$this->getWidgetSettings(),
+            'headerscripts' => $this->getHeaderScripts(),
+            'headerstyles' => $this->getHeaderStyle(),
+            'footerscripts' => $this->getFooterScripts(),
+            'footerstyles' => $this->getFooterStyle(),
+            'usrSettings'=> $this->userSettingOutlet(),
+        ]);
+        return $viewConfig;
     }
     
     //responsible for building widget specific data as part of the widget output. for parameter [WidgetData]
