@@ -100,6 +100,7 @@ class WidgetManager {
                                                         $this->AvailableWidgets[$widget->widget_name]['widgetType'], 
                                                         $usrSetting
                                                     );
+                $Tempwidget->UpdateWidgetSettings(['usrSettingValues'=>(json_decode($widget->settings,true) ?? [])]);
                 foreach(array_merge($Tempwidget->getHeaderScripts(), $Tempwidget->getFooterScripts()) as $resource){
                     if($resource['duplicate']===false && in_array($resource['file'], $SourceList)){
                         $Tempwidget->removeResource($resource['file']);
@@ -122,8 +123,10 @@ class WidgetManager {
                                             );
         if(!empty($widgetUserSettings))$widget->UpdateWidgetSettings($widgetUserSettings);
         $Settings=[
-            'scripts' => array_merge($widget->getHeaderScripts(), $widget->getFooterScripts()),
-            'styles' => array_merge($widget->getHeaderStyle(), $widget->getFooterStyle()),
+            'headerscripts'=>$widget->getHeaderScripts(),
+            'headerstyles' => $widget->getHeaderStyle(),
+            'footerscripts'=>$widget->getFooterScripts(),
+            'footerstyles' => $widget->getFooterStyle(),
             'usrSettings'=> $widget->userSettingOutlet()
         ];
         return (($asResource === false)? $widget->render(): [

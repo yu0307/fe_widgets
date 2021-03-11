@@ -1,5 +1,5 @@
 <template>
-    <div :class="['col-md-'+width, 'fe_widget_'+widgetType, (maximize?'max-widget':'')]" class="col-sm-12 fe_widget" :id="id" :name="widgetName" :usrKey="usrKey">
+    <div :class="['col-md-'+width, 'fe_widget_'+widgetType, (maximize?'max-widget':'')]" class="col-sm-12 fe_widget" :id="'wg_'+id" :name="widgetName" :usrKey="usrKey">
         <div class="panel" :class="[widgetBackground]">
             <div v-show="!disableHeader" :class="[(disableControls?'panel-controls':''),headerBackground,(hasUsrSettings?'':'HasSettingOutlet')]" class="panel-header">
                 <h3>
@@ -15,6 +15,9 @@
                     </a>
                     <a @click="toggleSlide" href="#" class="panel-toggle">
                         <i class="fas fa-angle-down"></i>
+                    </a>
+                    <a v-if="hasUsrSettings" href="#" class="panel-setting">
+                        <i class="fas fa-tools"></i>
                     </a>
                     <a @click="removeWidget" href="#" class="panel-close">
                         <i class="fas fa-trash-alt"></i>
@@ -52,7 +55,7 @@ export default {
     },
     computed:{
         hasUsrSettings(){
-            return _.isEmpty(this.usrSettings);
+            return !_.isEmpty(this.usrSettings);
         }
     },
     setup(props){

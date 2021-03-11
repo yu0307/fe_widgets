@@ -36,14 +36,14 @@
                                         <h5 class="py-2">
                                             <strong>Select</strong> a widget from the list below
                                         </h5>
-                                        <select class="btn-block" name="site_widgets" id="site_widgets" style="width:100%" @change="loadWidgetDetails">
-                                            <option value="">Select A Widget</option>
+                                        <select class="btn-block" name="site_widgets" id="site_widgets" style="width:100%" v-model="newWidgetInterface.selectedWidget" @change="loadWidgetDetails">
+                                            <option :value="null">Select A Widget</option>
                                             <option v-for="(w, index) in widgetList" :key="index" :value="w.name" >{{w.name}}</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div id="fe_widget_desc" class="f-18 p-10">
-                                    <div :class="newWidgetInterface.loadingDetail?'animate__fadeIn':'d-none'" class="text-center sm-col-12 m-t-10 animate__animated">
+                                    <div :class="newWidgetInterface.loadingDetail?'animate__fadeIn':'d-none'" class="text-center sm-col-12 mt-5 animate__animated">
                                         <i class= "fa fa-spinner fa-spin fa-3x fa-fw loading" ></i>
                                         <div class="text-center ">Loading Widget Details...</div>
                                     </div>
@@ -167,7 +167,53 @@ export default {
             this.$emit('WidgetLayoutChanged');
         },
         addWidgetToPanel(){
-
+            if(_.isNull(this.newWidgetInterface.selectedWidget) || _.isNull(this.roamingWidget)){
+                window.frameUtil.Notify('No widget is selected from the list','error');
+            }else{
+                axios.post('/GetWidget/' +this.newWidgetInterface.selectedWidget, { 'userSetting': (this.roamingWidget.userSettingOutlet||[]).reduce((rst,setting)=>{
+                    rst[setting.key]=(setting.value||null);
+                    return rst;
+                },{}) })
+                .then((resp)=>{
+                    let widgetComponent={
+                        setting:{},
+                        slots:{}
+                    };
+                    this.addWidget(widgetComponent);
+                    // var new_Widget = data;
+                    // var WidgetSetting = new_Widget.settings;
+                    // $(initNewWidget(new_Widget.html, WidgetSetting)).appendTo($('#fe_widgetCtrls'));
+                    // $(WidgetSetting.scripts).each(function (indx, elm) {
+                    //     loadWidgetResource(elm);
+                    // });
+                    // delete WidgetSetting.scripts;
+                    // $(WidgetSetting.styles).each(function (indx, elm) {
+                    //     loadWidgetResource(elm);
+                    // });
+                    // delete WidgetSetting.styles;
+                    // var usrSetting = (undefined == WidgetSetting.usrSettings) ? [] : WidgetSetting.usrSettings;;
+                    // delete WidgetSetting.usrSettings;
+                    // DashBoardWidgetBank['wg_' + WidgetSetting.ID] = { settings: usrSetting, widgetConfig: WidgetSetting };
+                    // $('#' + WidgetSetting.ID).trigger('wg_added', { 'Setting': WidgetSetting });
+                    // if (WidgetSetting.AjaxLoad === true) {
+                    //     if (undefined === window.AjaxWidgetPool) {//load ajax script if not exist
+                    //         $.getScript("/feiron/felaraframe/widgets/WidgetAjax.js")
+                    //             .done(function (script, textStatus) {
+                    //                 AjaxWidgetPool[WidgetSetting.ID] = WidgetSetting.Ajax;
+                    //             });
+                    //     } else {
+                    //         AjaxWidgetPool[WidgetSetting.ID] = WidgetSetting.Ajax;
+                    //     }
+                    //     checkAjaxStatus(WidgetSetting.ID, WidgetSetting.Ajax);
+                    //     if (undefined !== WidgetSetting.Ajax.AjaxJS) {
+                    //         $.getScript(WidgetSetting.Ajax.AjaxJS);
+                    //     }
+                    // }
+                })
+                .catch((err)=>{
+                    window.frameUtil.Notify(err);
+                });
+            }
         },
         loadWidgetDetails(elm){
             if(!_.isNull(elm.target) && !_.isEmpty(elm.target.value)){
@@ -244,7 +290,7 @@ export default {
             elm.querySelectorAll('slots').forEach((s)=>{
                 widgetComponent.slots[s.attributes['slot'].value]=s.innerHTML;
             });
-            this.widgets.push(widgetComponent);
+            this.addWidget(widgetComponent);
         }.bind(this));
         document.getElementById('initial-widgets').remove();
     },
@@ -266,6 +312,11 @@ export default {
                             display: inline !important;
                         }
                     }
+                }
+                .wg_main_cnt{
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    width: 100%;
                 }
                 &.max-widget{
                     position: absolute;
