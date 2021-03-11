@@ -18,7 +18,93 @@
                     </template>
                 </component>
             </div>
-            <slot name="widgetcontrols"/>
+            <div id="dashboardWidgetControl" class="modal fade" tabindex="-1" aria-hidden="true" ref="interfaceModal">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-dark">
+                            <h6 class="modal-title">Available Widgets</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="fe_widget_list_area">
+                                <div id="fe_widget_list">
+                                    <div :class="newWidgetInterface.loadingWidget?'animate__fadeIn':'d-none'" class="text-center sm-col-12 m-t-10 animate__animated">
+                                        <i class="fa fa-spinner fa-spin fa-3x fa-fw loading"></i>
+                                        <div class="text-center ">Loading Site Widgets...</div>
+                                    </div>
+                                    <div :class="newWidgetInterface.loadingWidget?'d-none':'animate__fadeIn'" class="animate__animated" id="widget-list-info">
+                                        <h5 class="py-2">
+                                            <strong>Select</strong> a widget from the list below
+                                        </h5>
+                                        <select class="btn-block" name="site_widgets" id="site_widgets" style="width:100%" @change="loadWidgetDetails">
+                                            <option value="">Select A Widget</option>
+                                            <option v-for="(w, index) in widgetList" :key="index" :value="w.name" >{{w.name}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="fe_widget_desc" class="f-18 p-10">
+                                    <div :class="newWidgetInterface.loadingDetail?'animate__fadeIn':'d-none'" class="text-center sm-col-12 m-t-10 animate__animated">
+                                        <i class= "fa fa-spinner fa-spin fa-3x fa-fw loading" ></i>
+                                        <div class="text-center ">Loading Widget Details...</div>
+                                    </div>
+                                    <div :class="newWidgetInterface.loadingDetail?'d-none':'animate__fadeIn'" class="widgetDetails animate__animated">
+                                        <div class="p-2">
+                                            <div>
+                                                {{roamingWidget.Description}}
+                                            </div>
+                                            <div v-if="this.roamingWidget.userSettingOutlet!=undefined">
+                                                <hr class="m-2">
+                                                <h6 class="my-2 alert alert-primary py-2">Widget Settings:</h6>
+                                                <div class="panel">
+                                                    <div v-for="(setting,index) in roamingWidget.userSettingOutlet" :key="index" :id="'wg_setting_'+id" class="form-group row">
+                                                        <div class="col-sm-12 col-md-3 control-label">
+                                                            <h6>{{setting.key}}</h6>
+                                                        </div>
+                                                        <div class="col-md-9 col-sm-12" >
+                                                                <select v-if="(setting.type=='select')" class="form-control form-select" :name="setting.key" v-model="roamingWidget.userSettingOutlet[index].value" >
+                                                                    <option v-for="(option,idx) in (setting.options||[])" :key="idx" :value="option">{{option}}</option>
+                                                                </select>
+
+                                                                <div v-else-if="(setting.type=='switch')" class="form-check-inline form-switch me-2">
+                                                                    <input class="form-check-input form-control" type="checkbox" toggle v-model="roamingWidget.userSettingOutlet[index].value" :name="setting.key" >
+                                                                </div>
+
+                                                                <div v-else-if="(setting.type=='radio')" class="form-check-inline me-2">
+                                                                    <div v-for="(option,idx) in (setting.options||[])" :key="idx">
+                                                                        <input :value="option" class="form-check-input form-control" v-model="roamingWidget.userSettingOutlet[index].value" type="radio" :name="setting.key">
+                                                                        <label class="form-check-label">
+                                                                            {{option}}
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div v-else-if="(setting.type=='checkbox')" class="form-check-inline me-2">
+                                                                    <div v-for="(option,idx) in (setting.options||[])" :key="idx">
+                                                                        <input class="form-check-input form-control" v-model="roamingWidget.userSettingOutlet[index].value" :name="setting.key" type="checkbox" :value="option">
+                                                                        <label class="form-check-label">{{option}}</label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div v-else class="prepend-icon">
+                                                                    <input class="form-control form-white" type="text" :name="setting.key" v-model="roamingWidget.userSettingOutlet[index].value" :placeholder="(setting.placeholder||'')" >
+                                                                    <i class="fa fa-indent"></i>
+                                                                </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer {{ $footerBg??'bg-gray-light' }}">
+                            <button type="button" class="btn btn-primary" id="widget_add" @click="addWidgetToPanel">Add Widget</button>
+                            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
             <div id="new_widget_area" class="animate__animated bd-9 c-gray animate__fadeInUp animate__fadeOutDown" style="z-index: 1010;">
                 <div class="front text-center" id="widget_add" @click="showNewInterface">
                     <div class="text-center m-2"><i class="fa fa-plus-circle fa-3x levitate animate__animated animate__infinite"></i></div>
@@ -34,7 +120,7 @@
 import Sortable from 'sortablejs';
 import widgetframe from './widgetframe.vue';
 import widgetTimer from './widgetTimer.js';
-import {ref,reactive} from 'vue';
+import {ref,reactive, computed} from 'vue';
 export default {
     name:'dashboard',
     components:{
@@ -47,20 +133,23 @@ export default {
         const newWidgetInterface = reactive({
             description:'',
             selectedWidget:null,
-            modal:null
+            modal:null,
+            loadingWidget:false,
+            loadingDetail:false
         });
         const widgets = ref([]);
-        const roamingWidget = reactive({});
+        const widgetList = ref([]);
         return {
             newWidgetInterface,
             widgets,
-            roamingWidget
+            widgetList
         }
     },
     data(){
         return {
             widgetGlobalTimer:null,
             sortableCtr:null,
+            roamingWidget:{}
         }
     },
     methods:{
@@ -77,14 +166,53 @@ export default {
             if(idx>=0) this.widgets.splice(idx,1);
             this.$emit('WidgetLayoutChanged');
         },
+        addWidgetToPanel(){
+
+        },
+        loadWidgetDetails(elm){
+            if(!_.isNull(elm.target) && !_.isEmpty(elm.target.value)){
+                this.newWidgetInterface.loadingDetail=true;
+                axios.get('/GetWidgetDetails/'+elm.target.value)
+                .then((resp)=>{
+                    if(!_.isEmpty(resp.data)){
+                        this.roamingWidget = reactive(resp.data);
+                    }
+                })
+                .catch((e)=>{
+                    window.frameUtil.Notify(e);
+                }).then(()=>{
+                    this.newWidgetInterface.loadingDetail=false;
+                });
+            }else{
+                this.roamingWidget.Description='<h3>Widget Info Unavailable...</h3>';
+            }
+        },
         showNewInterface(){
             this.clearWidgetWin();
+            this.loadWidgetList();
             this.newWidgetInterface.modal.show();
         },
         clearWidgetWin(){
             this.newWidgetInterface.description='';
             this.newWidgetInterface.selectedWidget=null;
             this.roamingWidget = {};
+        },
+        loadWidgetList() {
+            this.widgetList=[];
+            this.newWidgetInterface.loadingWidget=true;
+            axios.get('/GetWidgetList')
+            .then((resp)=>{
+                if(!_.isEmpty(resp.data)){
+                    Object.keys(resp.data||{}).forEach((widget)=>{
+                        this.widgetList.push({...resp.data[widget],...{name:widget}});
+                    });
+                }
+            })
+            .catch((e)=>{
+                window.frameUtil.Notify(e);
+            }).then(()=>{
+                this.newWidgetInterface.loadingWidget=false;
+            });
         },
         renderType(wtype){
             return this.$options.components.hasOwnProperty('wtype')?wtype:'widgetframe';
@@ -93,7 +221,7 @@ export default {
     mounted(){
         this.widgets=this.loadedWidgets??[];
         this.widgetGlobalTimer= new widgetTimer(15000);
-        this.newWidgetInterface.modal = new bootstrap.Modal(this.$el.querySelector('#dashboardWidgetControl'));
+        this.newWidgetInterface.modal = new bootstrap.Modal(this.$refs['interfaceModal']);
         this.sortableCtr=Sortable.create(document.getElementById('fe_widgetCtrls'), {//.fe_widget
             animation: 150,
             sort: true,
@@ -119,6 +247,11 @@ export default {
             this.widgets.push(widgetComponent);
         }.bind(this));
         document.getElementById('initial-widgets').remove();
+    },
+    computed:{
+        hasSelected(){
+            return !_.isNull(this.newWidgetInterface.selectedWidget);
+        }
     }
 }
 </script>
