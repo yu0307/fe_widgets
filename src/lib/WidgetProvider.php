@@ -20,8 +20,7 @@ class WidgetProvider {
             fe_Widgets\WidgetTable::class,
             fe_Widgets\WidgetChart::class,
             stock\wg_clock::class,
-            stock\wg_weather::class,
-            stock\wg_calendar::class
+            stock\wg_weather::class
         ];
         foreach($baseWidgets as $widget){
             $this->bind($widget);

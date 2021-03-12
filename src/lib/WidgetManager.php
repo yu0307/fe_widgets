@@ -11,7 +11,6 @@ class WidgetManager {
         $this->app = $app;
         $this->AvailableWidgets=[//available generic widgets to users for selection.
             'clock'=>['widgetType' => 'wg_clock', 'Description' => 'showing a clock on the dashboard'],
-            'calendar' => ['widgetType' => 'wg_calendar', 'Description' => 'A simple calendar widget.'],
             'weather' => ['widgetType' => 'wg_weather', 'Description' => 'A simple widget shows current weather forecast at your location.']
         ];
         $this->UserWidgetList= $this->UserWidgetSetings=[];
@@ -131,7 +130,7 @@ class WidgetManager {
         ];
         return (($asResource === false)? $widget->render(): [
             'html' => $widget->render(),
-            'settings' => array_merge($widget->getWidgetSettings(), $Settings)
+            'settings' => array_merge($widget->getSettings(), $Settings)
         ]) ;
     }
 }

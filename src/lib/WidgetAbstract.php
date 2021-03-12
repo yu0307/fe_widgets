@@ -192,6 +192,10 @@ abstract class WidgetAbstract implements Widget{
         return collect($this->viewParameters)->only($this->settingList)->toArray();
     }
 
+    public function getSettings(){
+        return $this->viewParameters;
+    }
+
     //responsible for polymorphic classes to build their ajax data
     public function getAjaxData($request){
         return $this->dataFunction();

@@ -1,15 +1,11 @@
+@php
+    if(! empty(trim($__env->yieldContent('jsInit')))){
+        $config['initCall']=$config['Type'].'_'.$config['usr_key'];
+    }
+@endphp
 <widgetframes
     config='@json($config)'
 >
-    @if (false!==($config['AjaxLoad']??false))
-        @php
-            unset($config['Ajax']['AjaxJS']);
-        @endphp
-    <script type="text/javascript">
-        AjaxWidgetPool['{{$ID}}']=@json($config['Ajax'])
-    </script>
-    @endif
-
     @yield('Widget_InlineScript')
 
     <slots slot=widget_header>
@@ -33,33 +29,13 @@
             @yield('Widget_footer')
         @endif
     </slots>
-</widgetframes>
-
-@push('JsBeforeReady')
-    @if ((!empty($config['usrSettings'])===true) || (!empty($config['widgetConfig'])===true))
-        DashBoardWidgetBank['{{'wg_'.$config['usr_key']}}']={
-                        settings:@json($config['usrSettings']??[]),
-                        widgetConfig:@json($config['widgetConfig']??[])
-                    };
+    @hasSection ('jsInit')
+        @push('footerscripts')
+        <script type="text/javascript">
+            function jsInit_{{$config['Type'].'_'.$config['usr_key']}}(dom,settings={}){
+                @yield('jsInit')
+            }
+        </script>
+        @endpush
     @endif
-    @yield('Widget_JsBeforeReady');
-@endpush
-
-@php
-    foreach ($config['headerscripts'] as $script){
-        app()->FeFrame->enqueueResource($script['file'],'headerscripts');
-    }
-    foreach ($config['headerstyles'] as $script){
-        app()->FeFrame->enqueueResource($script['file'],'headerstyles');
-    }
-    foreach ($config['footerscripts'] as $script){
-        app()->FeFrame->enqueueResource($script['file'],'footerscripts');
-    }
-    foreach ($config['footerstyles'] as $script){
-        app()->FeFrame->enqueueResource($script['file'],'footerstyles');
-    }
-@endphp
-
-@push('DocumentReady')
-    @yield('Widget_DocumentReady')
-@endpush
+</widgetframes>

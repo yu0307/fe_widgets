@@ -30,7 +30,7 @@
                                 <div id="fe_widget_list">
                                     <div :class="newWidgetInterface.loadingWidget?'animate__fadeIn':'d-none'" class="text-center sm-col-12 m-t-10 animate__animated">
                                         <i class="fa fa-spinner fa-spin fa-3x fa-fw loading"></i>
-                                        <div class="text-center ">Loading Site Widgets...</div>
+                                        <div class="text-center ">Processing...</div>
                                     </div>
                                     <div :class="newWidgetInterface.loadingWidget?'d-none':'animate__fadeIn'" class="animate__animated" id="widget-list-info">
                                         <h5 class="py-2">
@@ -52,7 +52,7 @@
                                             <div>
                                                 {{roamingWidget.Description}}
                                             </div>
-                                            <div v-if="this.roamingWidget.userSettingOutlet!=undefined">
+                                            <div v-if="this.roamingWidget.userSettingOutlet!=undefined && this.roamingWidget.userSettingOutlet.length>0">
                                                 <hr class="m-2">
                                                 <h6 class="my-2 alert alert-primary py-2">Widget Settings:</h6>
                                                 <div class="panel">
@@ -157,14 +157,14 @@ export default {
             this.widgets.push(widgetConfig);
         },
         removeWidgetPanel(tar) {
-            if (!_.isNull(tar.widget) && tar.widget.usrKey.length > 0) {
-                removeAjaxWidget(tar.widget.usrKey);
+            if (!_.isNull(tar.widget) && tar.widget.usrKey>=0) {
+                let idx = this.widgets.findIndex((elm)=>{
+                    return elm.setting.usr_key==tar.widget.usrKey;
+                });
+                document.getElementById('wg_'+tar.widget.usrKey).classList.add('pendingRemoval');
+                if(idx>=0) this.widgets.splice(idx,1);
+                this.$el.dispatchEvent(new CustomEvent('WidgetLayoutChanged',this));
             }
-            let idx = this.widgets.findIndex((elm)=>{
-                return elm.setting.usrKey==tar.widget.usrKey;
-            });
-            if(idx>=0) this.widgets.splice(idx,1);
-            this.$emit('WidgetLayoutChanged');
         },
         addWidgetToPanel(){
             if(_.isNull(this.newWidgetInterface.selectedWidget) || _.isNull(this.roamingWidget)){
@@ -176,39 +176,15 @@ export default {
                 },{}) })
                 .then((resp)=>{
                     let widgetComponent={
-                        setting:{},
+                        setting:resp.data.settings,
                         slots:{}
                     };
+                    (new DOMParser().parseFromString(resp.data.html,'text/html')).querySelectorAll('slots').forEach((s)=>{
+                        widgetComponent.slots[s.attributes['slot'].value]=s.innerHTML;
+                    });
                     this.addWidget(widgetComponent);
-                    // var new_Widget = data;
-                    // var WidgetSetting = new_Widget.settings;
-                    // $(initNewWidget(new_Widget.html, WidgetSetting)).appendTo($('#fe_widgetCtrls'));
-                    // $(WidgetSetting.scripts).each(function (indx, elm) {
-                    //     loadWidgetResource(elm);
-                    // });
-                    // delete WidgetSetting.scripts;
-                    // $(WidgetSetting.styles).each(function (indx, elm) {
-                    //     loadWidgetResource(elm);
-                    // });
-                    // delete WidgetSetting.styles;
-                    // var usrSetting = (undefined == WidgetSetting.usrSettings) ? [] : WidgetSetting.usrSettings;;
-                    // delete WidgetSetting.usrSettings;
-                    // DashBoardWidgetBank['wg_' + WidgetSetting.ID] = { settings: usrSetting, widgetConfig: WidgetSetting };
-                    // $('#' + WidgetSetting.ID).trigger('wg_added', { 'Setting': WidgetSetting });
-                    // if (WidgetSetting.AjaxLoad === true) {
-                    //     if (undefined === window.AjaxWidgetPool) {//load ajax script if not exist
-                    //         $.getScript("/feiron/felaraframe/widgets/WidgetAjax.js")
-                    //             .done(function (script, textStatus) {
-                    //                 AjaxWidgetPool[WidgetSetting.ID] = WidgetSetting.Ajax;
-                    //             });
-                    //     } else {
-                    //         AjaxWidgetPool[WidgetSetting.ID] = WidgetSetting.Ajax;
-                    //     }
-                    //     checkAjaxStatus(WidgetSetting.ID, WidgetSetting.Ajax);
-                    //     if (undefined !== WidgetSetting.Ajax.AjaxJS) {
-                    //         $.getScript(WidgetSetting.Ajax.AjaxJS);
-                    //     }
-                    // }
+                    this.$el.dispatchEvent(new CustomEvent('wg_added', widgetComponent));
+                    this.newWidgetInterface.modal.hide();
                 })
                 .catch((err)=>{
                     window.frameUtil.Notify(err);
@@ -235,7 +211,6 @@ export default {
         },
         showNewInterface(){
             this.clearWidgetWin();
-            this.loadWidgetList();
             this.newWidgetInterface.modal.show();
         },
         clearWidgetWin(){
@@ -262,11 +237,28 @@ export default {
         },
         renderType(wtype){
             return this.$options.components.hasOwnProperty('wtype')?wtype:'widgetframe';
+        },
+        updateLayout() {
+            let layout = [];
+            document.querySelectorAll('#fe_widgetCtrls .fe_widget:not(.pendingRemoval)').forEach((elm)=>{
+                let attr = elm.getAttribute('usrkey');
+                if (!_.isEmpty(attr) && attr.length > 0) {
+                    layout.push(attr);
+                }
+            })
+            axios.post('/updateWidgetLayout',{newLayout: layout})
+            .catch((err)=>{
+                window.frameUtil.Notify(err);
+            });
         }
     },
     mounted(){
         this.widgets=this.loadedWidgets??[];
         this.widgetGlobalTimer= new widgetTimer(15000);
+        this.loadWidgetList();
+        this.$el.addEventListener('WidgetLayoutChanged',()=>{
+            this.updateLayout();
+        });
         this.newWidgetInterface.modal = new bootstrap.Modal(this.$refs['interfaceModal']);
         this.sortableCtr=Sortable.create(document.getElementById('fe_widgetCtrls'), {//.fe_widget
             animation: 150,

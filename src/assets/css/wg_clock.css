@@ -1,0 +1,94 @@
+.jquery-clock {
+    -webkit-background-size: cover;
+    background-image: url(../image/clock/clock.png);
+    background-size: cover;
+    height: 600px;
+    list-style: none;
+    margin: auto;
+    padding: 0;
+    position: relative;
+    width: 600px;
+  }
+  .jquery-clock .jquery-clock-sec {
+    -webkit-background-size: contain;
+    background-image: url(../image/clock/sechand.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 100%;
+    left: 45%;
+    position: absolute;
+    top: 0;
+    width: 10%;
+    z-index: 3;
+  }
+  .jquery-clock .jquery-clock-min {
+    -webkit-background-size: contain;
+    background-image: url(../image/clock/minhand.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 100%;
+    left: 45%;
+    position: absolute;
+    top: 0;
+    width: 10%;
+    z-index: 2;
+  }
+  .jquery-clock .jquery-clock-hour {
+    -webkit-background-size: contain;
+    background-image: url(../image/clock/hourhand.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 100%;
+    left: 45%;
+    position: absolute;
+    top: 0;
+    width: 10%;
+    z-index: 1;
+  }
+  .jquery-clock .jquery-clock-pin {
+    background: #fff;
+    border-radius: 50%;
+    height: 3%;
+    left: 50%;
+    margin: -1.5%;
+    position: absolute;
+    top: 50%;
+    width: 3%;
+    z-index: 10;
+  }
+  .jquery-clock .jquery-clock-transitions {
+    -webkit-transition: all 1s cubic-bezier(0.01, 1.81, 0, 0.88);
+    -moz-transition: all 1s cubic-bezier(0.01, 1.81, 0, 0.88);
+    -o-transition: all 1s cubic-bezier(0.01, 1.81, 0, 0.88);
+    -ms-transition: all 1s cubic-bezier(0.01, 1.81, 0, 0.88);
+    transition: all 1s cubic-bezier(0.01, 1.81, 0, 0.88);
+  }
+  .jquery-clock.medium {
+    height: 300px;
+    width: 300px;
+  }
+  .jquery-clock.small {
+    height: 200px;
+    width: 200px;
+  }
+  .jquery-clock.white {
+    background-image: url(../image/clock/clock-white.png);
+  }
+  .jquery-clock.white .jquery-clock-sec {
+    background-image: url(../image/clock/sechand-white.png);
+    z-index: 3;
+  }
+  .jquery-clock.white .jquery-clock-min {
+    background-image: url(../image/clock/minhand-white.png);
+    z-index: 2;
+  }
+  .jquery-clock.white .jquery-clock-hour {
+    background-image: url(../image/clock/hourhand-white.png);
+    z-index: 1;
+  }
+  .jquery-clock.white .jquery-clock-pin {
+    background-color: #000;
+  }

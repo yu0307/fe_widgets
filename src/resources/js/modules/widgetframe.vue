@@ -109,6 +109,7 @@ export default {
                     }, (this.ajaxSetting.AjaxInterval||5000));
             }
         }
+        this.attachResources();
     },
     methods:{
         removeWidget(tar){
@@ -119,6 +120,54 @@ export default {
         },
         toggleMax(){
             this.maximize=!this.maximize;
+        },
+        async attachResources(callback=null){
+            let location = ['headerscripts','headerstyles','footerscripts','footerstyles'];
+            for(let i=0; i<location.length;i++){
+                let key =location[i];
+                let resourceList = (this.initConfig[key]||[]);
+                for(let j=0; j<resourceList.length;j++){
+                    let resource = resourceList[j];
+                    await new Promise((resolve,reject)=>{
+                        let extension = resource.file.substr((resource.file.lastIndexOf('.') + 1));
+                        let res = null;
+                        if (extension == 'css') {
+                            if (document.querySelectorAll('link[href$="' + resource.file + '"]').length <= 0) {
+                                res=document.createElement('link');
+                                res.rel="stylesheet";
+                                res.type="text/css";
+                                res.media="screen";
+                                res.href=resource.file;
+                            }
+                        } else {
+                            if ((resource.duplicate === true || document.querySelectorAll('script[src$="' + resource.file + '"]').length <= 0)) {
+                                res=document.createElement('script');
+                                res.src=resource.file;
+                                res.type = 'text/javascript';
+                            }
+                        }
+                        if(!_.isNull(res)){
+                            const cp=()=>{
+                                resolve(true);
+                            };
+                            res.onload=cp;
+                            res.onreadystatechange = function() {
+                                if (this.readyState == 'complete') {
+                                    cp();
+                                }
+                            }
+                            document.querySelector((key.includes('footer')?'body':'head')).appendChild(res);
+                        }else{
+                            resolve(true);
+                        }
+                    });
+                }
+            }
+            if(!_.isEmpty(this.initConfig['initCall']) && typeof window[this.initConfig['initCall']] =='function'){
+                window[this.initConfig['initCall']](this.$el,this.initConfig);
+            }
+            this.$el.dispatchEvent(new CustomEvent('widgetReady',{detail:{elm:this.$el,w_config:this.initConfig}}));
+            if(typeof callback=='function') callback();
         }
     }
 }
