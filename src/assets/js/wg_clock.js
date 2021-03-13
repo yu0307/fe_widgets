@@ -8,10 +8,8 @@ wg_c_srotate = "rotate(" + wg_c_sdegree + "deg)",
 wg_c_hrotate = "rotate(" + wg_c_hdegree + "deg)",
 wg_c_mrotate = "rotate(" + wg_c_mdegree + "deg)";
 
-document.querySelectorAll('.fe_widget_wg_clock').forEach((elm)=>{
-    elm.addEventListener('widgetReady',(e)=>{
-        initClock(e.detail.elm);
-    });
+document.getElementById('fe_widgetCtrls').addEventListener('widgetReady',(e)=>{
+    if(e.detail.w_config.Type=='wg_clock') initClock(e.detail.elm);
 });
 
 
@@ -23,14 +21,16 @@ function wg_c_addZero(i) {
 }
 
 function wg_c_updateWatch(t){
-    t.querySelector(".jquery-clock-sec").style.cssText=`-moz-transform:${wg_c_srotate};-webkit-transform:${wg_c_srotate};-ms-transform:${wg_c_srotate}`;
-    t.querySelector(".jquery-clock-hour").style.cssText=`-moz-transform:${wg_c_hrotate};-webkit-transform:${wg_c_hrotate};-ms-transform:${wg_c_hrotate}`;
-    t.querySelector(".jquery-clock-min").style.cssText=`-moz-transform:${wg_c_mrotate};-webkit-transform:${wg_c_mrotate};-ms-transform:${wg_c_mrotate}`;
-    if (null !== t.parentElement.querySelector('.wg_clock_digital')) {
-        var date = new Date();
-        t.parentElement.querySelector('.wg_clock_digital .wg_hour').innerText=wg_c_addZero(date.getHours());
-        t.parentElement.querySelector('.wg_clock_digital .wg_min').innerText=wg_c_addZero(date.getMinutes());
-        t.parentElement.querySelector('.wg_clock_digital .wg_sec').innerText=wg_c_addZero(date.getSeconds());
+    if(t.querySelector('.flip-card-front')){
+        t.querySelector(".jquery-clock-sec").style.cssText=`-moz-transform:${wg_c_srotate};-webkit-transform:${wg_c_srotate};-ms-transform:${wg_c_srotate}`;
+        t.querySelector(".jquery-clock-hour").style.cssText=`-moz-transform:${wg_c_hrotate};-webkit-transform:${wg_c_hrotate};-ms-transform:${wg_c_hrotate}`;
+        t.querySelector(".jquery-clock-min").style.cssText=`-moz-transform:${wg_c_mrotate};-webkit-transform:${wg_c_mrotate};-ms-transform:${wg_c_mrotate}`;
+        if (null !== t.parentElement.querySelector('.wg_clock_digital')) {
+            var date = new Date();
+            t.parentElement.querySelector('.wg_clock_digital .wg_hour').innerText=wg_c_addZero(date.getHours());
+            t.parentElement.querySelector('.wg_clock_digital .wg_min').innerText=wg_c_addZero(date.getMinutes());
+            t.parentElement.querySelector('.wg_clock_digital .wg_sec').innerText=wg_c_addZero(date.getSeconds());
+        }
     }
 }
 

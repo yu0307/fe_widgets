@@ -16,7 +16,7 @@
                     <a @click="toggleSlide" href="#" class="panel-toggle">
                         <i class="fas fa-angle-down"></i>
                     </a>
-                    <a v-if="hasUsrSettings" href="#" class="panel-setting">
+                    <a v-if="hasUsrSettings&&!showSettings" @click="toggleSettings" href="#" class="panel-setting">
                         <i class="fas fa-tools"></i>
                     </a>
                     <a @click="removeWidget" href="#" class="panel-close">
@@ -25,9 +25,28 @@
                 </div>
             </div>
 
-            <div v-show="showContents" class="panel-content" ref="widgetContent">
-                <div class="withScroll wg_main_cnt" :data-height="dataHeight" :style="{maxHeight:dataHeight+'px'}">
-                    <slot name="widget_contents"/>
+            <div v-show="showContents" class="panel-content position-relative" ref="widgetContent">
+                <div class="withScroll flip-card wg_main_cnt" :class="showSettings?'active':''" :data-height="dataHeight" :style="{maxHeight:dataHeight+'px'}" ref="w-contents">
+                    <div class="flip-card-inner">
+                        <transition name="flip-y" mode="out-in">
+                            <div v-if="showSettings" class="flip-card-back" ref="w-settings">
+                                <div class="row my-2 px-2">
+                                    <div class="col-sm-12">
+                                        <settings v-for="(configs, sidx) in usrSettings" :key="sidx" :id="'usr-setting'+sidx" :config="configs" v-model="usrSettings[sidx].value"/>
+                                    </div>
+                                </div>
+                                <div class="row my-2 mt-3">
+                                    <div class="col-sm-12">
+                                        <div class="float-start btn btn-success saveUsrSetting">Update</div> 
+                                        <div class="float-end btn btn-danger hideUsrSetting" @click="updateSettings(true)">Cancel</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-else class="flip-card-front">
+                                <slot name="widget_contents"/>
+                            </div>
+                        </transition>
+                    </div>
                 </div>
             </div>
             
@@ -39,18 +58,23 @@
 </template>
 
 <script>
-import {ref, reactive} from 'vue'
+import {ref, reactive} from 'vue';
+import settings from './settings.vue';
 export default {
     name:"widgetframe",
+    components:{
+        settings
+    },
     props:{
-        initConfig:{require:true}
+        initConfig:{required:true}
     },
     emits: ['wRemove'],
     data(){
         return{
             showContents:true,
             maximize:false,
-            ajaxTimer:null
+            ajaxTimer:null,
+            showSettings:false
         };
     },
     computed:{
@@ -68,7 +92,7 @@ export default {
         const disableHeader = ref(props.initConfig.DisableHeader||false);
         const disableControls = ref(props.initConfig.DisableControls||false);
         const headerBackground = ref(props.initConfig.HeaderBackground||'bg-primary');
-        const usrSettings = reactive(props.initConfig.usrSettings||{});
+        const usrSettings = reactive([].concat(props.initConfig.usrSettings));
         const headerIcon = ref(props.initConfig.HeaderIcon==false?'':(props.initConfig.HeaderIcon||'far fa-star'));
         const dataHeight = ref(props.initConfig.DataHeight||400);
         const disableFooter = ref(props.initConfig.DisableFooter||false);
@@ -121,6 +145,16 @@ export default {
         toggleMax(){
             this.maximize=!this.maximize;
         },
+        toggleSettings(){
+            this.showSettings=true;
+        },
+        updateSettings(skip=false){
+            if(!skip){
+
+            }else{
+                this.showSettings=false;
+            }
+        },
         async attachResources(callback=null){
             let location = ['headerscripts','headerstyles','footerscripts','footerstyles'];
             for(let i=0; i<location.length;i++){
@@ -166,9 +200,49 @@ export default {
             if(!_.isEmpty(this.initConfig['initCall']) && typeof window[this.initConfig['initCall']] =='function'){
                 window[this.initConfig['initCall']](this.$el,this.initConfig);
             }
-            this.$el.dispatchEvent(new CustomEvent('widgetReady',{detail:{elm:this.$el,w_config:this.initConfig}}));
+            this.$el.dispatchEvent(new CustomEvent('widgetReady',{bubbles: true,detail:{elm:this.$el,w_config:this.initConfig}}));
             if(typeof callback=='function') callback();
         }
     }
 }
 </script>
+
+<style lang="scss">
+    .wg_main_cnt{
+        .flip-card-back,.flip-card-front{
+            transition-delay: 0s !important;
+            transition: all 0s !important;
+        }
+        .flip-y-enter-active,
+        .flip-y-leave-active {
+            transition: transform 0.2s linear, opacity 0.2s ease-in-out !important;
+            transform-style: preserve-3d;
+            &.flip-card-back{
+                transform: scale(-1, 1);
+            }
+        }
+
+        .flip-y-enter-from,
+        .flip-y-leave-to {
+            &.flip-card-front{
+                transform: rotateY(90deg);
+                opacity: 0;
+            }
+            &.flip-card-back{
+                transform: rotateY(90deg);
+                opacity: 0;
+            }
+        }
+        .flip-y-enter-to,
+        .flip-y-leave-from {
+            &.flip-card-front{
+                transform: rotateY(0deg);
+                opacity: 1;
+            }
+            &.flip-card-back{
+                transform: rotateY(0deg);
+                opacity: 1;
+            }
+        }
+    }
+</style>
