@@ -37,7 +37,7 @@
                                 </div>
                                 <div class="row my-2 mt-3">
                                     <div class="col-sm-12">
-                                        <div class="float-start btn btn-success saveUsrSetting">Update</div> 
+                                        <div class="float-start btn btn-success saveUsrSetting" @click="updateSettings(false)">Update</div> 
                                         <div class="float-end btn btn-danger hideUsrSetting" @click="updateSettings(true)">Cancel</div>
                                     </div>
                                 </div>
@@ -149,10 +149,18 @@ export default {
             this.showSettings=true;
         },
         updateSettings(skip=false){
-            if(!skip){
-
-            }else{
+            if(skip){
                 this.showSettings=false;
+            }else{
+                axios.post('/updateUserWidgetSetting',{ target: this.usrKey, Settings: this.usrSettings })
+                .then((resp)=>{
+                    window.frameUtil.Notify('Widget Setting Updated.','info');
+                    this.$el.dispatchEvent(new CustomEvent('wgUserSettingUpdated',{detail:{elm:this.$el}}));
+                    this.showSettings=false;
+                })
+                .catch((err)=>{
+                    window.frameUtil.Notify(err);
+                })
             }
         },
         async attachResources(callback=null){
@@ -215,7 +223,7 @@ export default {
         }
         .flip-y-enter-active,
         .flip-y-leave-active {
-            transition: transform 0.2s linear, opacity 0.2s ease-in-out !important;
+            transition: transform 0.2s ease-in-out, opacity 0.2s ease-in !important;
             transform-style: preserve-3d;
             &.flip-card-back{
                 transform: scale(-1, 1);
@@ -229,7 +237,7 @@ export default {
                 opacity: 0;
             }
             &.flip-card-back{
-                transform: rotateY(90deg);
+                transform: rotateY(-90deg);
                 opacity: 0;
             }
         }

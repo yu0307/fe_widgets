@@ -93,13 +93,13 @@ class WidgetManager {
         $SourceList = [];
         foreach($this->loadLayout($user ?? auth()->user()) as $widget){
             if(!empty($this->AvailableWidgets[$widget->widget_name]) && !empty($this->AvailableWidgets[$widget->widget_name]['widgetType'])){
-                $usrSetting= array_merge(($this->AvailableWidgets[$widget->widget_name]['widgetParam'] ?? []), (json_decode($widget->settings,true) ?? []));
+                $usrSetting=($this->AvailableWidgets[$widget->widget_name]['widgetParam'] ?? []);
                 $usrSetting['usr_key']= $widget->id;
                 $Tempwidget=app()->Widget->BuildWidget(
                                                         $this->AvailableWidgets[$widget->widget_name]['widgetType'], 
                                                         $usrSetting
                                                     );
-                $Tempwidget->UpdateWidgetSettings(['usrSettingValues'=>(json_decode($widget->settings,true) ?? [])]);
+                $Tempwidget->assignSettingValues((json_decode($widget->settings,true) ?? []));
                 foreach(array_merge($Tempwidget->getHeaderScripts(), $Tempwidget->getFooterScripts()) as $resource){
                     if($resource['duplicate']===false && in_array($resource['file'], $SourceList)){
                         $Tempwidget->removeResource($resource['file']);

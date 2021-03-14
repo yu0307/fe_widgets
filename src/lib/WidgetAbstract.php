@@ -29,9 +29,10 @@ abstract class WidgetAbstract implements Widget{
             'Widget_footer'     => '',
             'DisableControls'   => false,
             'Width'             => '4',
-            'col'             => '',
+            'col'               => '',
             'DataHeight'        => '400',
             'Widget_contents'   => '',
+            'usrSettingValues'  =>[],
             'WidgetData'        => false,//[false: Display contents only, no data to load. function:function to get data. dataset:var of data]
             'AjaxLoad'          =>false
         ];
@@ -61,6 +62,7 @@ abstract class WidgetAbstract implements Widget{
             // array_push($this->headerscripts, ['file' => $file, 'duplicate' => $duplicate]);
         }
     }
+
     public function enqueueFooter($file, $duplicate = false){
         $extension  = explode(".", $file);
         $extension  = end($extension);
@@ -96,12 +98,15 @@ abstract class WidgetAbstract implements Widget{
     public function getHeaderScripts():array{
         return $this->headerscripts->toArray();
     }
+
     public function getHeaderStyle(): array{
         return $this->headerstyles->toArray();
     }
+
     public function getFooterScripts(): array{
         return $this->footerscripts->toArray();
     }
+
     public function getFooterStyle(): array{
         return $this->footerstyles->toArray();
     }
@@ -154,6 +159,12 @@ abstract class WidgetAbstract implements Widget{
         return $this;
     }
 
+    public function assignSettingValues($settings){
+        foreach(($settings??[]) as $s){
+            $this->viewParameters['usrSettingValues'][$s['key']]=$s;
+        }
+    }
+
     //render final widget html to the pipeline
     public function render(){
         
@@ -169,6 +180,13 @@ abstract class WidgetAbstract implements Widget{
         $this->viewParameters['footerscripts'] = $this->getFooterScripts();
         $this->viewParameters['footerstyles'] = $this->getFooterStyle();
         $this->viewParameters['usrSettings']= $this->userSettingOutlet();
+        if(!empty($this->viewParameters['usrSettingValues'])){
+            foreach(($this->viewParameters['usrSettings']??[]) as $index=>$set){
+                if(array_key_exists($set['key'],$this->viewParameters['usrSettingValues'])){
+                    $this->viewParameters['usrSettings'][$index]['value']=($this->viewParameters['usrSettingValues'][$set['key']]['value']??$set['value']);
+                }
+            }
+        }
         $this->viewParameters['widgetConfig'] = $this->getWidgetSettings();
         $this->viewParameters['ID'] = $this->viewParameters['usr_key']?? $this->viewParameters['ID'];
         return (false=== $this->view? View::make('fe_widgets::widgetFrame', ['config'=>$this->viewParameters]): $this->view->with(['config'=>$this->viewParameters]))->render();
@@ -186,6 +204,12 @@ abstract class WidgetAbstract implements Widget{
     public function UpdateWidgetSettings($Settings=[]){
         $this->viewParameters=array_merge($this->viewParameters,$Settings);
         $this->settingList=array_merge($this->settingList,array_keys($Settings));
+    }
+
+    public function updateWidgetSetting($key,$values=[]){
+        if(!empty($values) && array_key_exists($key,$this->viewParameters)){
+            $this->viewParameters[$key]=array_merge($this->viewParameters[$key],$values);
+        }
     }
 
     public function getWidgetSettings(){

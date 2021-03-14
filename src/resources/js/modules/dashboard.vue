@@ -57,38 +57,11 @@
                                                 <h6 class="my-2 alert alert-primary py-2">Widget Settings:</h6>
                                                 <div class="panel">
                                                     <div v-for="(setting,index) in roamingWidget.userSettingOutlet" :key="index" :id="'wg_setting_'+id" class="form-group row">
-                                                        <div class="col-sm-12 col-md-3 control-label">
+                                                        <div class="col-sm-12 col-md-3 control-label align-items-center d-flex">
                                                             <h6>{{setting.key}}</h6>
                                                         </div>
                                                         <div class="col-md-9 col-sm-12" >
-                                                                <select v-if="(setting.type=='select')" class="form-control form-select" :name="setting.key" v-model="roamingWidget.userSettingOutlet[index].value" >
-                                                                    <option v-for="(option,idx) in (setting.options||[])" :key="idx" :value="option">{{option}}</option>
-                                                                </select>
-
-                                                                <div v-else-if="(setting.type=='switch')" class="form-check-inline form-switch me-2">
-                                                                    <input class="form-check-input form-control" type="checkbox" toggle v-model="roamingWidget.userSettingOutlet[index].value" :name="setting.key" >
-                                                                </div>
-
-                                                                <div v-else-if="(setting.type=='radio')" class="form-check-inline me-2">
-                                                                    <div v-for="(option,idx) in (setting.options||[])" :key="idx">
-                                                                        <input :value="option" class="form-check-input form-control" v-model="roamingWidget.userSettingOutlet[index].value" type="radio" :name="setting.key">
-                                                                        <label class="form-check-label">
-                                                                            {{option}}
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div v-else-if="(setting.type=='checkbox')" class="form-check-inline me-2">
-                                                                    <div v-for="(option,idx) in (setting.options||[])" :key="idx">
-                                                                        <input class="form-check-input form-control" v-model="roamingWidget.userSettingOutlet[index].value" :name="setting.key" type="checkbox" :value="option">
-                                                                        <label class="form-check-label">{{option}}</label>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div v-else class="prepend-icon">
-                                                                    <input class="form-control form-white" type="text" :name="setting.key" v-model="roamingWidget.userSettingOutlet[index].value" :placeholder="(setting.placeholder||'')" >
-                                                                    <i class="fa fa-indent"></i>
-                                                                </div>
+                                                            <settings :id="'usr-setting'+index" :config="setting" v-model="roamingWidget.userSettingOutlet[index].value" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -120,11 +93,13 @@
 import Sortable from 'sortablejs';
 import widgetframe from './widgetframe.vue';
 import widgetTimer from './widgetTimer.js';
+import settings from './settings.vue';
 import {ref,reactive, computed} from 'vue';
 export default {
     name:'dashboard',
     components:{
-        widgetframe
+        widgetframe,
+        settings
     },
     props:{
         loadedWidgets:{}
@@ -163,7 +138,7 @@ export default {
                 });
                 document.getElementById('wg_'+tar.widget.usrKey).classList.add('pendingRemoval');
                 if(idx>=0) this.widgets.splice(idx,1);
-                this.$el.dispatchEvent(new CustomEvent('WidgetLayoutChanged',this));
+                this.$el.dispatchEvent(new CustomEvent('WidgetLayoutChanged',{detail:{elm:this.$el}}));
             }
         },
         addWidgetToPanel(){
@@ -183,7 +158,7 @@ export default {
                         widgetComponent.slots[s.attributes['slot'].value]=s.innerHTML;
                     });
                     this.addWidget(widgetComponent);
-                    this.$el.dispatchEvent(new CustomEvent('wg_added', widgetComponent));
+                    this.$el.dispatchEvent(new CustomEvent('wg_added', {detail:{elm:widgetComponent}}));
                     this.newWidgetInterface.modal.hide();
                 })
                 .catch((err)=>{
