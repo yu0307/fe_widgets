@@ -10,8 +10,7 @@ class WidgetManager {
     public function __construct(\Illuminate\Foundation\Application $app){
         $this->app = $app;
         $this->AvailableWidgets=[//available generic widgets to users for selection.
-            'clock'=>['widgetType' => 'wg_clock', 'Description' => 'showing a clock on the dashboard'],
-            'weather' => ['widgetType' => 'wg_weather', 'Description' => 'A simple widget shows current weather forecast at your location.']
+            'clock'=>['widgetType' => 'wg_clock', 'Description' => 'showing a clock on the dashboard']
         ];
         $this->UserWidgetList= $this->UserWidgetSetings=[];
     }
@@ -120,7 +119,6 @@ class WidgetManager {
                                                 $this->AvailableWidgets[$userWidgetName]['widgetType'], 
                                                 ($this->AvailableWidgets[$userWidgetName]['widgetParam'] ?? [])
                                             );
-        if(!empty($widgetUserSettings))$widget->UpdateWidgetSettings($widgetUserSettings);
         $Settings=[
             'headerscripts'=>$widget->getHeaderScripts(),
             'headerstyles' => $widget->getHeaderStyle(),
@@ -128,6 +126,8 @@ class WidgetManager {
             'footerstyles' => $widget->getFooterStyle(),
             'usrSettings'=> $widget->userSettingOutlet()
         ];
+        if(!empty($widgetUserSettings))$widget->UpdateWidgetSettings($widgetUserSettings);
+        
         return (($asResource === false)? $widget->render(): [
             'html' => $widget->render(),
             'settings' => array_merge($widget->getSettings(), $Settings)

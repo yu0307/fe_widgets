@@ -161,7 +161,7 @@ abstract class WidgetAbstract implements Widget{
 
     public function assignSettingValues($settings){
         foreach(($settings??[]) as $s){
-            $this->viewParameters['usrSettingValues'][$s['key']]=$s;
+            $this->viewParameters['usrSettingValues'][$s['key']]=$s['value'];
         }
     }
 
@@ -183,7 +183,7 @@ abstract class WidgetAbstract implements Widget{
         if(!empty($this->viewParameters['usrSettingValues'])){
             foreach(($this->viewParameters['usrSettings']??[]) as $index=>$set){
                 if(array_key_exists($set['key'],$this->viewParameters['usrSettingValues'])){
-                    $this->viewParameters['usrSettings'][$index]['value']=($this->viewParameters['usrSettingValues'][$set['key']]['value']??$set['value']);
+                    $this->viewParameters['usrSettings'][$index]['value']=($this->viewParameters['usrSettingValues'][$set['key']]??$set['value']);
                 }
             }
         }
