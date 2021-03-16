@@ -181,7 +181,8 @@ export default {
                 for(let j=0; j<resourceList.length;j++){
                     let resource = resourceList[j];
                     await new Promise((resolve,reject)=>{
-                        let extension = resource.file.substr((resource.file.lastIndexOf('.') + 1));
+                        let [startidx,lastidx]=[(resource.file.lastIndexOf('/')||0),resource.file.lastIndexOf('.')];
+                        let [fileName,extension] = [resource.file.substr((startidx + 1),lastidx-startidx-1),resource.file.substr((lastidx + 1))];
                         let res = null;
                         if (extension == 'css') {
                             if (document.querySelectorAll('link[href$="' + resource.file + '"]').length <= 0) {

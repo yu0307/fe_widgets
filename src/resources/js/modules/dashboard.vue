@@ -1,7 +1,7 @@
 <template>
     <div id="widget-container" class="h-100">
         <div class="widgetArea h-100 position-relative" id="fe_widgetArea">
-            <div class="list-group row" id="fe_widgetCtrls">
+            <div class="row" id="fe_widgetCtrls">
                 <div id="initial-widgets">
                     <slot name="initialwidgets" @w-remove="removeWidgetPanel"/>
                 </div>
@@ -94,7 +94,7 @@ import Sortable from 'sortablejs';
 import widgetframe from './widgetframe.vue';
 import widgetTimer from './widgetTimer.js';
 import settings from './settings.vue';
-import {ref,reactive, computed} from 'vue';
+import {ref,reactive,defineAsyncComponent} from 'vue';
 export default {
     name:'dashboard',
     components:{

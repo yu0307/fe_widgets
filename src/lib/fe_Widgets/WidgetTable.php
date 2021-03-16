@@ -24,6 +24,7 @@ class WidgetTable extends Widget{
         if(false===empty($this->viewParameters['WidgetData'])){
             $this->tableData = (is_callable($this->viewParameters['WidgetData'])) ? $this->viewParameters['WidgetData']() : $this->viewParameters['WidgetData'];
         }
+        $this->enqueueHeader(asset('/feiron/fe_widgets/js/dataTables.js'),false,'vue');
     }
 
     public function setData($data){

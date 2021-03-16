@@ -51,26 +51,26 @@ abstract class WidgetAbstract implements Widget{
         }
     }
 
-    public function enqueueHeader($file,$duplicate=false){
+    public function enqueueHeader($file,$duplicate=false,$type='script'){
         $extension  = explode(".", $file);
         $extension  = end($extension);
         if ($extension == 'css') {
-            $this->headerstyles->push(['file' => $file, 'duplicate' => false]);
+            $this->headerstyles->push(['file' => $file, 'duplicate' => false,'type'=>$type]);
             // array_push($this->headerstyles,['file'=>$file,'duplicate'=>false]);
         } else {
-            $this->headerscripts->push(['file' => $file, 'duplicate' => $duplicate]);
+            $this->headerscripts->push(['file' => $file, 'duplicate' => $duplicate,'type'=>$type]);
             // array_push($this->headerscripts, ['file' => $file, 'duplicate' => $duplicate]);
         }
     }
 
-    public function enqueueFooter($file, $duplicate = false){
+    public function enqueueFooter($file, $duplicate = false,$type='script'){
         $extension  = explode(".", $file);
         $extension  = end($extension);
         if ($extension == 'css') {
-            $this->footerstyles->push(['file' => $file, 'duplicate' => false]);
+            $this->footerstyles->push(['file' => $file, 'duplicate' => false,'type'=>$type]);
             // array_push($this->footerstyles, ['file' => $file, 'duplicate' => false]);
         } else {
-            $this->footerscripts->push(['file' => $file, 'duplicate' => $duplicate]);
+            $this->footerscripts->push(['file' => $file, 'duplicate' => $duplicate,'type'=>$type]);
             // array_push($this->footerscripts, ['file' => $file, 'duplicate' => $duplicate]);
         }
     }

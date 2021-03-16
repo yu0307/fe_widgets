@@ -3,20 +3,20 @@
 @section('Widget_contents')
 <table class="table table-striped">
     <thead>
-        @isset($headers)
-            @if(is_array($headers))
+        @isset($config['headers'])
+            @if(is_array($config['headers']))
                 <tr>
-                    @foreach($headers as $header)
-                        <th>{{$header}}</th>
+                    @foreach($config['headers'] as $config['header'])
+                        <th>{{$config['header']}}</th>
                     @endforeach
                 </tr>
             @else
-                {!!$headers!!}
+                {!!$config['headers']!!}
             @endif
         @endisset
     </thead>
     <tbody>
-        {!!$WidgetData!!}
+        {!!$config['WidgetData']!!}
     </tbody>
 </table>
 @overwrite
