@@ -27,7 +27,16 @@
 
             <div v-show="showContents" class="panel-content position-relative" ref="widgetContent">
                 <div class="withScroll flip-card wg_main_cnt" :class="showSettings?'active':''" :data-height="dataHeight" :style="{maxHeight:dataHeight+'px'}" ref="w-contents">
-                    <div class="flip-card-inner">
+                    <transition enter-active-class="animate__animated fadeIn" leave-active-class="animate__animated fadeOut" mode="out-in">
+                        <keep-alive>
+                            
+                        </keep-alive>
+                    </transition>
+                    <div class="animate__animated d-flex content-loader align-items-center justify-content-center text-center" :class="!(loadingContent||ajaxSetting.loading)?'animate__fadeOut d-none':'animate__fadeIn'">
+                        <i class= "fa p-0 mt-2 fa-spinner fa-spin fa-3x fa-fw loading" ></i>
+                        <div class="text-center "><h4>Loading Widget Contents...</h4></div>
+                    </div>
+                    <div class="flip-card-inner animate__animated">
                         <transition name="flip-y" mode="out-in">
                             <div v-if="showSettings" class="flip-card-back" ref="w-settings">
                                 <div class="row my-2 px-2">
@@ -74,7 +83,8 @@ export default {
             showContents:true,
             maximize:false,
             ajaxTimer:null,
-            showSettings:false
+            showSettings:false,
+            loadingContent:true
         };
     },
     computed:{
@@ -97,7 +107,7 @@ export default {
         const dataHeight = ref(props.initConfig.DataHeight||400);
         const disableFooter = ref(props.initConfig.DisableFooter||false);
         const footerBackground = ref(props.initConfig.FooterBackground||'bg-dark');
-        const ajaxSetting = reactive({...props.initConfig.Ajax,...{key:usrKey,AjaxLoad:props.initConfig.AjaxLoad }});
+        const ajaxSetting = reactive({...props.initConfig.Ajax,...{key:usrKey,AjaxLoad:props.initConfig.AjaxLoad,loading:false }});
         return {
             width,
             widgetType,
@@ -205,11 +215,12 @@ export default {
                     });
                 }
             }
-            if(!_.isEmpty(this.initConfig['initCall']) && typeof window[this.initConfig['initCall']] =='function'){
-                window[this.initConfig['initCall']](this.$el,this.initConfig);
+            if(!_.isEmpty(this.initConfig['initCall']) && typeof window['jsInit_'+this.initConfig['initCall']] =='function'){
+                window['jsInit_'+this.initConfig['initCall']](this.$el,this.initConfig);
             }
             this.$el.dispatchEvent(new CustomEvent('widgetReady',{bubbles: true,detail:{elm:this.$el,w_config:this.initConfig}}));
             if(typeof callback=='function') callback();
+            this.loadingContent=false;
         }
     }
 }
@@ -251,6 +262,14 @@ export default {
                 transform: rotateY(0deg);
                 opacity: 1;
             }
+        }
+        .content-loader{
+                position: absolute;
+                left: 0px;
+                right: 0px;
+                top: 0px;
+                bottom: 0px;
+                background: #ffffffa1;
         }
     }
 </style>

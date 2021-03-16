@@ -31,9 +31,3 @@
         @endif
     </div>
 @overwrite
-
-@section('jsInit')
-    @verbatim
-        alert('works');
-    @endverbatim
-@endsection

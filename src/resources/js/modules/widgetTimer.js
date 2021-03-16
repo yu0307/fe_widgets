@@ -14,13 +14,14 @@ export default class widgetTimer{
 
     checkAjaxStatus(widget) {
         widget.AjaxInterval = (undefined == widget.AjaxInterval) ? false : widget.AjaxInterval;
-        document.getElementById(widget.key).querySelector('.control-btn .panel-reload').classList.remove('d-none');
+        document.getElementById('wg_'+widget.key).querySelector('.control-btn .panel-reload').classList.remove('d-none');
         this.sendWidgetAjax(widget);
         if(widget.AjaxInterval) this.globalWidgetTimerPool[widget.key] = (widget);
     }
 
     sendWidgetAjax(widget) {
-        let dom = document.getElementById(widget.key);
+        widget.loading=true;
+        let dom = document.getElementById('wg_'+widget.key);
         let request = (
                 widget.AjaxType.toLowerCase()=='get'?
                 axios({
@@ -35,7 +36,11 @@ export default class widgetTimer{
                 })
             );
         request.then((resp)=>{
-            dom.dispatchEvent('AjaxUpdated',resp.data);
+            dom.dispatchEvent(new CustomEvent('AjaxUpdated',{detail:{data:resp.data}}));
+        }).catch((err)=>{
+            console.log(err);
+        }).then(()=>{
+            widget.loading=false;
         });
         return request;
     }

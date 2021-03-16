@@ -2,7 +2,18 @@
 
 @section('Widget_contents')
 
-<div id="wg_chart_{{$ID}}" wg_id="{{$ID}}" class="wg_Charts fe_widget_WidgetChart" style="height: 100%;" chartType="{{$chartType??"line"}}"></div>
+<canvas class="wg_Charts fe_widget_WidgetChart w-100" >
+
+</canvas>
 
 @overwrite
 
+@section('jsInit')
+    @verbatim
+    let chart = new Chart(dom.querySelector('.wg_Charts').getContext('2d'),_.cloneDeep(settings.widgetConfig.chartSetting));
+    dom.addEventListener('AjaxUpdated',(resp)=>{
+        chart.data.datasets=resp.detail.data.data;
+        chart.update();
+    });
+    @endverbatim
+@endsection

@@ -208,7 +208,7 @@ abstract class WidgetAbstract implements Widget{
 
     public function updateWidgetSetting($key,$values=[]){
         if(!empty($values) && array_key_exists($key,$this->viewParameters)){
-            $this->viewParameters[$key]=array_merge($this->viewParameters[$key],$values);
+            $this->viewParameters[$key]=(is_array($this->viewParameters[$key])?array_merge($this->viewParameters[$key],$values):$values);
         }
     }
 
