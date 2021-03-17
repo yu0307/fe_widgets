@@ -174,12 +174,14 @@ abstract class WidgetAbstract implements Widget{
                 $this->setWidgetContents('<h4 class="c-primary text-center text-capitalize align-middle">No data is available...</h4>');
             }
         }
+        
         $this->viewParameters['WidgetName'] = $this->WidgetName();
         $this->viewParameters['headerscripts'] = $this->getHeaderScripts();
         $this->viewParameters['headerstyles'] = $this->getHeaderStyle();
         $this->viewParameters['footerscripts'] = $this->getFooterScripts();
         $this->viewParameters['footerstyles'] = $this->getFooterStyle();
         $this->viewParameters['usrSettings']= $this->userSettingOutlet();
+
         if(!empty($this->viewParameters['usrSettingValues'])){
             foreach(($this->viewParameters['usrSettings']??[]) as $index=>$set){
                 if(array_key_exists($set['key'],$this->viewParameters['usrSettingValues'])){

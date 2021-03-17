@@ -24,11 +24,15 @@ class WidgetTable extends Widget{
         if(false===empty($this->viewParameters['WidgetData'])){
             $this->tableData = (is_callable($this->viewParameters['WidgetData'])) ? $this->viewParameters['WidgetData']() : $this->viewParameters['WidgetData'];
         }
-        $this->enqueueHeader(asset('/feiron/fe_widgets/js/dataTables.js'),false,'vue');
+    }
+
+    public function setHeader($headers){
+        $this->viewParameters['headers']=$headers;
     }
 
     public function setData($data){
         $this->tableData = (is_callable($data)) ? $data() : $data;
+        $this->viewParameters['WidgetData']=$this->tableData;
     }
 
     public function getAjaxData($request){
@@ -43,8 +47,8 @@ class WidgetTable extends Widget{
                 $content='';
                 foreach($this->tableData as $row){
                     $content .= '<tr>';
-                    foreach ($this->viewParameters['headers'] as $idx=>$header) {
-                        $content.='<td>'. $row[$idx].'</td>';
+                    foreach ($row as $cell) {
+                        $content.='<td>'. $cell.'</td>';
                     }
                     $content .= '</tr>';
                 }
