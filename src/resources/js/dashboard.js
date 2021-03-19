@@ -4,6 +4,7 @@ window.dashboard= window.Vue.createApp({
         dashboard
     }
 });
+window.components=[{name:'test',src:'/feiron/fe_widgets/js/test.js'}];
 window.ready(()=>{
     window.dashboard.mount(document.getElementById("dashboard"));
 });

@@ -1,7 +1,7 @@
 <template>
     <div :class="['col-md-'+width, 'fe_widget_'+widgetType, (maximize?'max-widget':'')]" class="col-sm-12 fe_widget" :id="'wg_'+id" :name="widgetName" :usrKey="usrKey">
         <div class="panel" :class="[widgetBackground]">
-            <div v-show="!disableHeader" :class="[(disableControls?'panel-controls':''),headerBackground,(hasUsrSettings?'':'HasSettingOutlet')]" class="panel-header">
+            <div v-show="!disableHeader" :class="[(showContents?'':'bg-dark'),(disableControls?'panel-controls':''),headerBackground,(hasUsrSettings?'':'HasSettingOutlet')]" class="panel-header">
                 <h3>
                     <i :class="headerIcon"></i>
                     <slot name="widget_header"/>

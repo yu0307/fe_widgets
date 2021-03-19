@@ -1,0 +1,77 @@
+@import url(https://fonts.googleapis.com/css?family=Fjalla+One:400|Roboto:400,400italic,700);
+
+
+.wg_calendar {
+  width:100%; 
+  background:#332f2e; 
+  border-radius:5px; 
+  overflow:hidden; 
+  display:block; 
+  margin-bottom:10px; 
+  margin:0 auto; 
+}
+
+.wg_calendar.wg_calendarcal {
+  padding:0 10px 10px 10px; 
+  box-sizing:border-box!important; 
+  background:#749d9e; 
+  background: -webkit-linear-gradient(#749d9e, #b3a68b)!important; 
+  background: -o-linear-gradient(#749d9e, #b3a68b)!important; 
+  background: -moz-linear-gradient(#749d9e, #b3a68b)!important; 
+  background: linear-gradient(#749d9e, #b3a68b)!important;
+}
+.wg_calendar .wg_calendardays{
+    max-width: 295px;
+    margin: auto;
+}
+
+.wg_calendar .wg_calendarcalt {
+  font:18px 'Roboto'; 
+  font-weight:700; 
+  color:#f7f3eb; 
+  display:block; 
+  margin:18px 0 0 0; 
+  text-transform:uppercase; 
+  text-align:center; 
+  letter-spacing:1px;
+}
+
+.wg_calendar.wg_calendarcal span {
+  font:11px 'Roboto'; 
+  font-weight:400; 
+  color:#f7f3eb; 
+  text-align:center; 
+  width:42px; 
+  height:42px; 
+  display:inline-block; 
+  float:left; 
+  overflow:hidden; 
+  line-height:40px;
+}
+
+.wg_calendar.wg_calendarcal .wg_calendarb:before {
+  opacity:0.3; 
+  content:'o';
+}
+
+.wg_calendar .circle {
+  border:1px solid #f7f3eb; 
+  box-sizing:border-box!important; 
+  border-radius:200px!important;
+}
+
+.wg_calendar span[data-title]:hover:after, 
+.wg_calendar div[data-title]:hover:after {
+  font:11px 'Roboto'; 
+  font-weight:400; 
+  content:attr(data-title); 
+  position:absolute; 
+  margin:0 0 100px; 
+  background:#282423; 
+  border:1px solid #f7f3eb; 
+  color:#f7f3eb; 
+  padding:5px; 
+  z-index:9999; 
+  min-width:150px; 
+  max-width:150px;
+}

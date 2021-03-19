@@ -32,4 +32,12 @@ class wg_clock extends Widget{
     {
         return $this->viewParameters['Widget_contents'];
     }
+
+    public static function userSettingOutlet()
+    {
+        return [
+            ['key'=>'location','type'=>'text','placeholder'=>''],
+            ['key' => 'unit', 'type' => 'radio','options'=>['Metric', 'Imperial'],'value'=> 'Imperial']
+        ];
+    }
 }

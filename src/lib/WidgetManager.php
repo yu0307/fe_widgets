@@ -10,7 +10,8 @@ class WidgetManager {
     public function __construct(\Illuminate\Foundation\Application $app){
         $this->app = $app;
         $this->AvailableWidgets=[//available generic widgets to users for selection.
-            'clock'=>['widgetType' => 'wg_clock', 'Description' => 'showing a clock on the dashboard']
+            'clock'=>['widgetType' => 'wg_clock', 'Description' => 'showing a clock on the dashboard'],
+            'calendar'=>['widgetType' => 'wg_calendar', 'Description' => 'a simple calendar used to only show dates']
         ];
         $this->UserWidgetList= $this->UserWidgetSetings=[];
     }
