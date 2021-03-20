@@ -11,7 +11,8 @@ class WidgetManager {
         $this->app = $app;
         $this->AvailableWidgets=[//available generic widgets to users for selection.
             'clock'=>['widgetType' => 'wg_clock', 'Description' => 'showing a clock on the dashboard'],
-            'calendar'=>['widgetType' => 'wg_calendar', 'Description' => 'a simple calendar used to only show dates']
+            'calendar'=>['widgetType' => 'wg_calendar', 'Description' => 'a simple calendar used to only show dates'],
+            'weather'=>['widgetType' => 'wg_weather', 'Description' => 'a lite weight widget shows current weather forecast'],
         ];
         $this->UserWidgetList= $this->UserWidgetSetings=[];
     }
