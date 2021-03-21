@@ -133,12 +133,11 @@ abstract class WidgetAbstract implements Widget{
     }
 
     protected function setWidgetType($type){
-        $this->viewParameters['Type']= $type;
-        $this->setAjaxJS($type);   
+        $this->viewParameters['Type']= $type; 
         return $this;
     }
 
-    protected function setAjaxJS($name,$path= '/feiron/felaraframe/widgets/'){
+    protected function setAjaxJS($name,$path= '/feiron/fe_widgets/js/'){
         $path='/'. trim(trim($path,'/'),'\\').'/';
         $this->viewParameters['Ajax']['AjaxJS'] = asset($path . $name . '.js');
         return $this;

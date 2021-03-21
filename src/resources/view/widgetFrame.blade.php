@@ -1,8 +1,22 @@
-@php
-    if(! empty(trim($__env->yieldContent('jsInit')))){
+@hasSection ('jsInit')
+
+    @php
         $config['initCall']=$config['Type'].'_'.$config['usr_key'];
-    }
-@endphp
+    @endphp
+
+    @push('footerscripts')
+    <script type="text/javascript">
+        function jsInit_{{$config['Type'].'_'.$config['usr_key']}}(dom,settings={}){
+            @yield('jsInit')
+        }
+    </script>
+    @endpush
+
+@endif
+
+@section('jsInit')
+
+@overwrite
 <widgetframes
     config='@json($config)'
 >
@@ -29,13 +43,4 @@
             @yield('Widget_footer')
         @endif
     </slots>
-    @hasSection ('jsInit')
-        @push('footerscripts')
-        <script type="text/javascript">
-            function jsInit_{{$config['Type'].'_'.$config['usr_key']}}(dom,settings={}){
-                @yield('jsInit')
-            }
-        </script>
-        @endpush
-    @endif
 </widgetframes>

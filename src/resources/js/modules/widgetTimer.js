@@ -27,12 +27,12 @@ export default class widgetTimer{
                 axios({
                     method: widget.AjaxType,
                     url: widget.AjaxURL,
-                    data: (widget.data||{})
+                    params: {key:widget.key,...(widget.data||{})}
                 }):
                 axios({
                     method: widget.AjaxType,
                     url: widget.AjaxURL,
-                    params: (widget.data||{})
+                    data: {key:widget.key,...(widget.data||{})}
                 })
             );
         request.then((resp)=>{

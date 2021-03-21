@@ -280,6 +280,16 @@ export default {
                             display: inline !important;
                         }
                     }
+                    &.bg-transparent{
+                        top: 0px;
+                        & + .panel-content{
+                            padding-top: 0px;
+                            padding-bottom: 0px;
+                            & .flip-card-back{
+                                padding-top: 40px !important;
+                            }
+                        } 
+                    } 
                 }
                 .wg_main_cnt{
                     overflow-y: auto;
@@ -301,6 +311,11 @@ export default {
                         .panel-content{
                             flex: 1 1 auto !important;
                         }
+                    }
+                }
+                .panel.bg-transparent{
+                    .flip-card-back{
+                        border-radius: 10px;
                     }
                 }
             }

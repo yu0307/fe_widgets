@@ -38,7 +38,7 @@
                     </div>
                     <div class="flip-card-inner animate__animated">
                         <transition name="flip-y" mode="out-in">
-                            <div v-if="showSettings" class="flip-card-back" ref="w-settings">
+                            <div v-if="showSettings" class="flip-card-back bg-white p-2" ref="w-settings">
                                 <div class="row my-2 px-2">
                                     <div class="col-sm-12">
                                         <settings v-for="(configs, sidx) in usrSettings" :key="sidx" :id="'usr-setting'+sidx" :config="configs" v-model="usrSettings[sidx].value"/>
@@ -165,6 +165,7 @@ export default {
                 axios.post('/updateUserWidgetSetting',{ target: this.usrKey, Settings: this.usrSettings })
                 .then((resp)=>{
                     window.frameUtil.Notify('Widget Setting Updated.','info');
+                    if(!_.isNull(this.ajaxSetting) && this.ajaxSetting.AjaxLoad===true && this.ajaxSetting.AjaxInterval===false) this.$parent.widgetGlobalTimer.sendWidgetAjax(this.ajaxSetting);
                     this.$el.dispatchEvent(new CustomEvent('wgUserSettingUpdated',{detail:{elm:this.$el}}));
                     this.showSettings=false;
                 })
@@ -270,7 +271,7 @@ export default {
                 right: 0px;
                 top: 0px;
                 bottom: 0px;
-                background: #ffffffa1;
+                mix-blend-mode: difference;
         }
     }
 </style>
