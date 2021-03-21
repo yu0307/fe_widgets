@@ -33,13 +33,22 @@ class wg_weather extends Widget{
 
     public function getAjaxData($request){
         $api_key = '13abbb52fe069d005b73bef3cd35b232';
-        $setting = userWidgetLayout::where('layoutable_id', auth()->user()->id)->find($request->input('key'));
-        $setting = json_decode($setting->settings??[]);
+        $setting = [
+            'q'=>'Mountain View, US',
+            'units'=>'imperial'
+        ];
+        $usrSetting = userWidgetLayout::where('layoutable_id', auth()->user()->id)->find($request->input('key'));
+        foreach(json_decode($usrSetting->settings??[],true) as $set){
+            if($set['key']=='location'){
+                $setting['q']=$set['value'];
+            }else if($set['key']=='unit'){
+                $setting['units']=$set['value'];
+            }else{
+                $setting[$set['key']]=$set['value'];
+            }
+        }
+
         $api_endpoint = ($request->input('URLaction')== 'get5days')? 'https://api.openweathermap.org/data/2.5/forecast': 'https://api.openweathermap.org/data/2.5/weather';
-        $setting['q']=$setting['location']??'Mountain View, US';        
-        $setting['units']=$setting['unit']??'imperial';
-        unset($setting['location']);
-        unset($setting['unit']);
         $param='';
         foreach($setting as $name=>$val){
             $val=join(',',array_map(function($v){
