@@ -37,8 +37,10 @@
                         <div class="text-center "><h4>Loading Widget Contents...</h4></div>
                     </div>
                     <div class="flip-card-inner animate__animated">
-                        <transition name="flip-y" mode="out-in">
-                            <div v-if="showSettings" class="flip-card-back bg-white p-2" ref="w-settings">
+                        <div class="flip-card-back bg-white p-2 flip-y" 
+                            ref="w-settings" 
+                            :class="(showSettings)?'flip-y-in':'flip-y-out'">
+                            <div v-if="showSettings">
                                 <div class="row my-2 px-2">
                                     <div class="col-sm-12">
                                         <settings v-for="(configs, sidx) in usrSettings" :key="sidx" :id="'usr-setting'+sidx" :config="configs" v-model="usrSettings[sidx].value"/>
@@ -51,10 +53,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div v-else class="flip-card-front">
-                                <slot name="widget_contents"/>
-                            </div>
-                        </transition>
+                        </div>
+                        <div class="flip-card-front flip-y" :class="(showSettings)?'flip-y-out':'flip-y-in'">
+                            <slot name="widget_contents"/>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -229,40 +231,97 @@ export default {
 </script>
 
 <style lang="scss">
+    @keyframes flip-y-out-front {
+        0% {
+            position: relative;
+            transform: rotateY(0deg);
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+            transform: rotateY(90deg);
+        }
+        100% {
+            opacity: 0; 
+            transform: rotateY(90deg);
+            position: absolute;
+        }
+    }
+    @keyframes flip-y-out-back {
+        0% {
+            position: relative;
+            transform: rotateY(0deg);
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+            transform: rotateY(-90deg);
+        }
+        100% {
+            opacity: 0; 
+            position: absolute;
+        }
+    }
+
+    @keyframes flip-y-in-front {
+        0% {
+            position: absolute;
+            transform: rotateY(90deg);
+            display: block;
+            opacity: 0;
+        }
+        10% {
+            opacity: 1;
+        }
+        100% {
+            transform: rotateY(0deg);
+            opacity: 1; 
+            display: block !important;
+            position: relative;
+        }
+    }
+    @keyframes flip-y-in-back {
+        0% {
+            position: absolute;
+            transform: rotateY(-90deg);
+            display: block;
+            opacity: 0;
+        }
+        10% {
+            opacity: 1;
+        }
+        100% {
+            transform: rotateY(0deg);
+            opacity: 1; 
+            position: relative;
+        }
+    }
     .wg_main_cnt{
+        
         .flip-card-back,.flip-card-front{
             transition-delay: 0s !important;
             transition: all 0s !important;
         }
-        .flip-y-enter-active,
-        .flip-y-leave-active {
+        .flip-y{
             transition: transform 0.2s ease-in-out, opacity 0.2s ease-in !important;
             transform-style: preserve-3d;
-            &.flip-card-back{
-                transform: scale(-1, 1);
-            }
         }
+        .flip-y-in{
+            &.flip-card-front{
+                animation: flip-y-in-front 0.2s ease-in-out forwards;
+            }
+            &.flip-card-back{
+                animation: flip-y-in-back 0.2s ease-in-out forwards;
+            }
 
-        .flip-y-enter-from,
-        .flip-y-leave-to {
-            &.flip-card-front{
-                transform: rotateY(90deg);
-                opacity: 0;
-            }
-            &.flip-card-back{
-                transform: rotateY(-90deg);
-                opacity: 0;
-            }
         }
-        .flip-y-enter-to,
-        .flip-y-leave-from {
+        .flip-y-out{
+            display: none;
             &.flip-card-front{
-                transform: rotateY(0deg);
-                opacity: 1;
+                animation: flip-y-out-front 0.2s ease-in-out forwards;
             }
             &.flip-card-back{
-                transform: rotateY(0deg);
-                opacity: 1;
+                animation: flip-y-out-back 0.2s ease-in-out forwards;
             }
         }
         .content-loader{

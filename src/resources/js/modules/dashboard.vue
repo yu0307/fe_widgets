@@ -312,7 +312,7 @@ export default {
                     top: 0px;
                     bottom: 0px;
                     width: 100%;
-                    z-index: 1000;
+                    z-index: 10001;
                     .panel{
                         display: flex;
                         flex-direction: column;
