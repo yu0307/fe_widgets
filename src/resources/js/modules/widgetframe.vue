@@ -217,8 +217,8 @@ export default {
                     });
                 }
             }
-            if(!_.isEmpty(this.initConfig['initCall']) && typeof window['jsInit_'+this.initConfig['initCall']] =='function'){
-                window['jsInit_'+this.initConfig['initCall']](this.$el,this.initConfig);
+            if(typeof window[`jsInit_${this.initConfig['Type']}_${this.initConfig['ID']}`] =='function'){
+                window[`jsInit_${this.initConfig['Type']}_${this.initConfig['ID']}`](this.$el,this.initConfig);
             }
             this.$el.dispatchEvent(new CustomEvent('widgetReady',{bubbles: true,detail:{elm:this.$el,w_config:this.initConfig}}));
             if(typeof callback=='function') callback();

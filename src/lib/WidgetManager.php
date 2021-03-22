@@ -129,9 +129,17 @@ class WidgetManager {
             'usrSettings'=> $widget->userSettingOutlet()
         ];
         if(!empty($widgetUserSettings))$widget->UpdateWidgetSettings($widgetUserSettings);
+
+        $jsInit=$widget->render(true)->renderSections();
+        if(array_key_exists('jsInit',$jsInit)){
+            $jsInit=$jsInit['jsInit'];
+        }else{
+            $jsInit='';
+        }
         
         return (($asResource === false)? $widget->render(): [
             'html' => $widget->render(),
+            'jsInit'=>$jsInit,
             'settings' => array_merge($widget->getSettings(), $Settings)
         ]) ;
     }

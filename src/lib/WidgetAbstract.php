@@ -165,7 +165,7 @@ abstract class WidgetAbstract implements Widget{
     }
 
     //render final widget html to the pipeline
-    public function render(){
+    public function render($asView=false){
         
         if($this->viewParameters['AjaxLoad']===false && $this->viewParameters['WidgetData']!==false){
             $this->viewParameters['WidgetData'] = (is_callable($this->viewParameters['WidgetData'])) ? $this->viewParameters['WidgetData']() : $this->dataFunction();
@@ -180,6 +180,7 @@ abstract class WidgetAbstract implements Widget{
         $this->viewParameters['footerscripts'] = $this->getFooterScripts();
         $this->viewParameters['footerstyles'] = $this->getFooterStyle();
         $this->viewParameters['usrSettings']= $this->userSettingOutlet();
+        $this->viewParameters['asView']=$asView;
 
         if(!empty($this->viewParameters['usrSettingValues'])){
             foreach(($this->viewParameters['usrSettings']??[]) as $index=>$set){
@@ -190,7 +191,8 @@ abstract class WidgetAbstract implements Widget{
         }
         $this->viewParameters['widgetConfig'] = $this->getWidgetSettings();
         $this->viewParameters['ID'] = $this->viewParameters['usr_key']?? $this->viewParameters['ID'];
-        return (false=== $this->view? View::make('fe_widgets::widgetFrame', ['config'=>$this->viewParameters]): $this->view->with(['config'=>$this->viewParameters]))->render();
+        $view = (false=== $this->view? View::make('fe_widgets::widgetFrame', ['config'=>$this->viewParameters]): $this->view->with(['config'=>$this->viewParameters]));
+        return ($asView===true)?$view:$view->render();
     }
 
     //send ajax data to the client

@@ -27,38 +27,36 @@
 @overwrite
 
 @section('jsInit')
-    @verbatim
-    
-    var icons = new Skycons({"color": "black"});
-    icons.set(dom.querySelector('#weathericon'), 'cloudy');
-    icons.play();
-    function decodeWeather(code) {
-        switch (true) {
-            case (/^800$/.test(code))://clear
-                return 'clear-day';
-            case (/^611$/.test(code))://sleet
-                return 'sleet';
-            case (/^741$/.test(code))://fog
-                return 'fog';
-            case (/^2[0-9]{2}$/.test(code))://Thunderstorm
-                return 'storm';
-            case (/^3[0-9]{2}$/.test(code))://Drizzle
-                return 'drizzle';
-            case (/^5[0-9]{2}$/.test(code))://Rain
-                return 'rain';
-            case (/^6[0-9]{2}$/.test(code))://snow
-                return 'snow';
-            case (/^7[0-9]{2}$/.test(code))://Atmosphere
-                return 'wind';
-            case (/^80[0-9]{1}$/.test(code))://Clouds
-                return 'cloudy';
-            default:
-                return '';
-        }
-        return '';
-    }
-    
+    @verbatim    
     dom.addEventListener('AjaxUpdated',(resp)=>{
+        let icons = new Skycons({"color": "black"});
+        icons.set(dom.querySelector('#weathericon'), 'cloudy');
+        icons.play();
+        function decodeWeather(code) {
+            switch (true) {
+                case (/^800$/.test(code))://clear
+                    return 'clear-day';
+                case (/^611$/.test(code))://sleet
+                    return 'sleet';
+                case (/^741$/.test(code))://fog
+                    return 'fog';
+                case (/^2[0-9]{2}$/.test(code))://Thunderstorm
+                    return 'storm';
+                case (/^3[0-9]{2}$/.test(code))://Drizzle
+                    return 'drizzle';
+                case (/^5[0-9]{2}$/.test(code))://Rain
+                    return 'rain';
+                case (/^6[0-9]{2}$/.test(code))://snow
+                    return 'snow';
+                case (/^7[0-9]{2}$/.test(code))://Atmosphere
+                    return 'wind';
+                case (/^80[0-9]{1}$/.test(code))://Clouds
+                    return 'cloudy';
+                default:
+                    return '';
+            }
+            return '';
+        }
         if(resp.detail.data.weather){
             let rst = resp.detail.data;
             let weather = (rst.weather[0]||{main:'N/A'});

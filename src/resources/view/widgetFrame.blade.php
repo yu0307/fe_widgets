@@ -1,11 +1,7 @@
 @hasSection ('jsInit')
 
-    @php
-        $config['initCall']=$config['Type'].'_'.$config['usr_key'];
-    @endphp
-
     @push('footerscripts')
-    <script type="text/javascript">
+    <script type="text/javascript" id="wg_init_{{$config['usr_key']}}">
         function jsInit_{{$config['Type'].'_'.$config['usr_key']}}(dom,settings={}){
             @yield('jsInit')
         }
@@ -13,10 +9,10 @@
     @endpush
 
 @endif
-
-@section('jsInit')
-
-@overwrite
+@if ($config['asView']===false)
+    @section('jsInit')
+    @overwrite
+@endif
 <widgetframes
     config='@json($config)'
 >

@@ -138,6 +138,7 @@ export default {
                 });
                 document.getElementById('wg_'+tar.widget.usrKey).classList.add('pendingRemoval');
                 if(idx>=0) this.widgets.splice(idx,1);
+                if(document.getElementById('wg_init_'+tar.widget.usrKey)) document.getElementById('wg_init_'+tar.widget.usrKey).remove();
                 this.$el.dispatchEvent(new CustomEvent('WidgetLayoutChanged',{detail:{elm:this.$el}}));
             }
         },
@@ -145,10 +146,7 @@ export default {
             if(_.isNull(this.newWidgetInterface.selectedWidget) || _.isNull(this.roamingWidget)){
                 window.frameUtil.Notify('No widget is selected from the list','error');
             }else{
-                axios.post('/GetWidget/' +this.newWidgetInterface.selectedWidget, { 'userSetting': (this.roamingWidget.userSettingOutlet||[]).reduce((rst,setting)=>{
-                    rst[setting.key]=(setting.value||null);
-                    return rst;
-                },{}) })
+                axios.post('/GetWidget/' +this.newWidgetInterface.selectedWidget, { 'userSetting': (this.roamingWidget.userSettingOutlet||[])})
                 .then((resp)=>{
                     let widgetComponent={
                         setting:resp.data.settings,
@@ -157,6 +155,17 @@ export default {
                     (new DOMParser().parseFromString(resp.data.html,'text/html')).querySelectorAll('slots').forEach((s)=>{
                         widgetComponent.slots[s.attributes['slot'].value]=s.innerHTML;
                     });
+                    if((resp.data.jsInit||'').trim().length>0){
+                        let initBlock=document.createElement('script');
+                        initBlock.type = 'text/javascript';
+                        initBlock.id='wg_init_'+widgetComponent.setting.ID;
+                        initBlock.innerHTML=`
+                            function jsInit_${widgetComponent.setting.Type}_${widgetComponent.setting.ID}(dom,settings={}){
+                                ${resp.data.jsInit}
+                            }
+                        `;
+                        document.body.appendChild(initBlock);
+                    }
                     this.addWidget(widgetComponent);
                     this.$el.dispatchEvent(new CustomEvent('wg_added', {detail:{elm:widgetComponent}}));
                     this.newWidgetInterface.modal.hide();
