@@ -28,10 +28,11 @@ abstract class WidgetAbstract implements Widget{
             'Widget_header'     => '',
             'Widget_footer'     => '',
             'DisableControls'   => false,
-            'Width'             => '3',
-            'col'             => '',
+            'Width'             => '4',
+            'col'               => '',
             'DataHeight'        => '400',
             'Widget_contents'   => '',
+            'usrSettingValues'  =>[],
             'WidgetData'        => false,//[false: Display contents only, no data to load. function:function to get data. dataset:var of data]
             'AjaxLoad'          =>false
         ];
@@ -50,25 +51,26 @@ abstract class WidgetAbstract implements Widget{
         }
     }
 
-    public function enqueueHeader($file,$duplicate=false){
+    public function enqueueHeader($file,$duplicate=false,$type='script'){
         $extension  = explode(".", $file);
         $extension  = end($extension);
         if ($extension == 'css') {
-            $this->headerstyles->push(['file' => $file, 'duplicate' => false]);
+            $this->headerstyles->push(['file' => $file, 'duplicate' => false,'type'=>$type]);
             // array_push($this->headerstyles,['file'=>$file,'duplicate'=>false]);
         } else {
-            $this->headerscripts->push(['file' => $file, 'duplicate' => $duplicate]);
+            $this->headerscripts->push(['file' => $file, 'duplicate' => $duplicate,'type'=>$type]);
             // array_push($this->headerscripts, ['file' => $file, 'duplicate' => $duplicate]);
         }
     }
-    public function enqueueFooter($file, $duplicate = false){
+
+    public function enqueueFooter($file, $duplicate = false,$type='script'){
         $extension  = explode(".", $file);
         $extension  = end($extension);
         if ($extension == 'css') {
-            $this->footerstyles->push(['file' => $file, 'duplicate' => false]);
+            $this->footerstyles->push(['file' => $file, 'duplicate' => false,'type'=>$type]);
             // array_push($this->footerstyles, ['file' => $file, 'duplicate' => false]);
         } else {
-            $this->footerscripts->push(['file' => $file, 'duplicate' => $duplicate]);
+            $this->footerscripts->push(['file' => $file, 'duplicate' => $duplicate,'type'=>$type]);
             // array_push($this->footerscripts, ['file' => $file, 'duplicate' => $duplicate]);
         }
     }
@@ -96,12 +98,15 @@ abstract class WidgetAbstract implements Widget{
     public function getHeaderScripts():array{
         return $this->headerscripts->toArray();
     }
+
     public function getHeaderStyle(): array{
         return $this->headerstyles->toArray();
     }
+
     public function getFooterScripts(): array{
         return $this->footerscripts->toArray();
     }
+
     public function getFooterStyle(): array{
         return $this->footerstyles->toArray();
     }
@@ -128,12 +133,11 @@ abstract class WidgetAbstract implements Widget{
     }
 
     protected function setWidgetType($type){
-        $this->viewParameters['Type']= $type;
-        $this->setAjaxJS($type);   
+        $this->viewParameters['Type']= $type; 
         return $this;
     }
 
-    protected function setAjaxJS($name,$path= '/feiron/felaraframe/widgets/'){
+    protected function setAjaxJS($name,$path= '/feiron/fe_widgets/js/'){
         $path='/'. trim(trim($path,'/'),'\\').'/';
         $this->viewParameters['Ajax']['AjaxJS'] = asset($path . $name . '.js');
         return $this;
@@ -154,8 +158,14 @@ abstract class WidgetAbstract implements Widget{
         return $this;
     }
 
+    public function assignSettingValues($settings){
+        foreach(($settings??[]) as $s){
+            $this->viewParameters['usrSettingValues'][$s['key']]=$s['value'];
+        }
+    }
+
     //render final widget html to the pipeline
-    public function render(){
+    public function render($asView=false){
         
         if($this->viewParameters['AjaxLoad']===false && $this->viewParameters['WidgetData']!==false){
             $this->viewParameters['WidgetData'] = (is_callable($this->viewParameters['WidgetData'])) ? $this->viewParameters['WidgetData']() : $this->dataFunction();
@@ -163,16 +173,26 @@ abstract class WidgetAbstract implements Widget{
                 $this->setWidgetContents('<h4 class="c-primary text-center text-capitalize align-middle">No data is available...</h4>');
             }
         }
+        
         $this->viewParameters['WidgetName'] = $this->WidgetName();
         $this->viewParameters['headerscripts'] = $this->getHeaderScripts();
         $this->viewParameters['headerstyles'] = $this->getHeaderStyle();
         $this->viewParameters['footerscripts'] = $this->getFooterScripts();
         $this->viewParameters['footerstyles'] = $this->getFooterStyle();
         $this->viewParameters['usrSettings']= $this->userSettingOutlet();
+        $this->viewParameters['asView']=$asView;
+
+        if(!empty($this->viewParameters['usrSettingValues'])){
+            foreach(($this->viewParameters['usrSettings']??[]) as $index=>$set){
+                if(array_key_exists($set['key'],$this->viewParameters['usrSettingValues'])){
+                    $this->viewParameters['usrSettings'][$index]['value']=($this->viewParameters['usrSettingValues'][$set['key']]??$set['value']);
+                }
+            }
+        }
         $this->viewParameters['widgetConfig'] = $this->getWidgetSettings();
         $this->viewParameters['ID'] = $this->viewParameters['usr_key']?? $this->viewParameters['ID'];
-
-        return (false=== $this->view? View::make('fe_widgets::widgetFrame', $this->viewParameters): $this->view->with($this->viewParameters))->render();
+        $view = (false=== $this->view? View::make('fe_widgets::widgetFrame', ['config'=>$this->viewParameters]): $this->view->with(['config'=>$this->viewParameters]));
+        return ($asView===true)?$view:$view->render();
     }
 
     //send ajax data to the client
@@ -189,8 +209,18 @@ abstract class WidgetAbstract implements Widget{
         $this->settingList=array_merge($this->settingList,array_keys($Settings));
     }
 
+    public function updateWidgetSetting($key,$values=[]){
+        if(!empty($values) && array_key_exists($key,$this->viewParameters)){
+            $this->viewParameters[$key]=(is_array($this->viewParameters[$key])?array_merge($this->viewParameters[$key],$values):$values);
+        }
+    }
+
     public function getWidgetSettings(){
         return collect($this->viewParameters)->only($this->settingList)->toArray();
+    }
+
+    public function getSettings(){
+        return $this->viewParameters;
     }
 
     //responsible for polymorphic classes to build their ajax data
@@ -201,6 +231,29 @@ abstract class WidgetAbstract implements Widget{
     //front end settings available to users.
     public static function userSettingOutlet(){
         return [];
+    }
+
+    public function serializeJson(){
+
+        if($this->viewParameters['AjaxLoad']===false && $this->viewParameters['WidgetData']!==false){
+            $this->viewParameters['WidgetData'] = (is_callable($this->viewParameters['WidgetData'])) ? $this->viewParameters['WidgetData']() : $this->dataFunction();
+            if (empty($this->viewParameters['WidgetData'])) {
+                $this->setWidgetContents('<h4 class="c-primary text-center text-capitalize align-middle">No data is available...</h4>');
+            }
+        }
+
+        $viewConfig =array_merge($this->viewParameters, [
+            'ID'=>$this->viewParameters['usr_key']?? $this->viewParameters['ID'],
+            'WidgetName'=>$this->WidgetName(),
+            'usrSettings'=>$this->userSettingOutlet(), 
+            'widgetConfig'=>$this->getWidgetSettings(),
+            'headerscripts' => $this->getHeaderScripts(),
+            'headerstyles' => $this->getHeaderStyle(),
+            'footerscripts' => $this->getFooterScripts(),
+            'footerstyles' => $this->getFooterStyle(),
+            'usrSettings'=> $this->userSettingOutlet(),
+        ]);
+        return $viewConfig;
     }
     
     //responsible for building widget specific data as part of the widget output. for parameter [WidgetData]

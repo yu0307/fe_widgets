@@ -13,6 +13,6 @@ class widgetDashBoard extends Component
 
     public function render()
     {
-        return view('fe_widgets::components.widget-dash-board');
+        return view('fe_widgets::widget-dashboard');
     }
 }

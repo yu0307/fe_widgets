@@ -3,40 +3,60 @@
 namespace feiron\fe_widgets\lib\stock;
 
 use feiron\fe_widgets\lib\WidgetAbstract as Widget;
+use feiron\fe_widgets\models\userWidgetLayout;
 
-class wg_weather extends Widget
-{
+use function PHPUnit\Framework\isEmpty;
+
+class wg_weather extends Widget{
 
     /*
         $viewParameters: 
         Extends @parent:$viewParameters
         Widget specific vars: none
     */
-    public function __construct($viewParameters)
-    {
+    public function __construct($viewParameters){
         //Widget Defaults 
-        $defaultParameters = [
-            'WidgetName' => 'weather',
-            'Width' => '4',
-            'DataHeight' => 300,
-            'HeaderBackground' => 'bg-transparent',
-            'WidgetBackground' => 'bg-primary',
-            'HeaderIcon' => false
+        $defaultParameters=[
+            'WidgetName'=>'weather',
+            'Width'=>'3',
+            'DataHeight'=>'240',
+            'HeaderIcon'=>"fas fa-cloud-sun",
+            'WidgetBackground'=> 'bg-transparent',
+            'HeaderBackground'=> 'bg-transparent',
+            'AjaxLoad'=>true
         ];
         parent::__construct(array_merge($defaultParameters, ($viewParameters ?? [])));
-        // $this->viewParameters['Ajax']['AjaxInterval'] = false;
         $this->setView('fe_widgets::stock.wg_weather');
-        $this->enqueueFooter(asset('/feiron/felaraframe/plugins/skycons/skycons.min.js'));
-        $this->enqueueFooter(asset('/feiron/felaraframe/plugins/FeiWeather/FeiWeather.js'));
-        $this->enqueueFooter(asset('/feiron/felaraframe/widgets/wg_weather.js'));
-        $this->enqueueHeader(asset('/feiron/felaraframe/widgets/css/wg_Weather.css'));
+        $this->enqueueHeader(asset('/feiron/fe_widgets/plugins/skycons/skycons.min.js'));
+        $this->enqueueHeader(asset('/feiron/fe_widgets/css/wg_weather.css'));
     }
 
     public function getAjaxData($request){
         $api_key = '13abbb52fe069d005b73bef3cd35b232';
+        $setting = [
+            'q'=>'Mountain View, US',
+            'units'=>'imperial'
+        ];
+        $usrSetting = userWidgetLayout::where('layoutable_id', auth()->user()->id)->find($request->input('key'));
+        foreach(json_decode($usrSetting->settings??[],true) as $set){
+            if($set['key']=='location'){
+                $setting['q']=$set['value'];
+            }else if($set['key']=='unit'){
+                $setting['units']=$set['value'];
+            }else{
+                $setting[$set['key']]=$set['value'];
+            }
+        }
+
         $api_endpoint = ($request->input('URLaction')== 'get5days')? 'https://api.openweathermap.org/data/2.5/forecast': 'https://api.openweathermap.org/data/2.5/weather';
-        
-        $api_url = $api_endpoint. $request->input('parameter') . '&appid=' . $api_key;
+        $param='';
+        foreach($setting as $name=>$val){
+            $val=join(',',array_map(function($v){
+                return str_replace(' ','+',trim($v));
+            },explode(',',trim($val))));
+            $param.="&$name=".$val;
+        }
+        $api_url = $api_endpoint. "?".ltrim($param,'&') . '&appid=' . $api_key;
         if (!isset($api_url)) {
             return (['status'=>'error','message'=>'no api URL found']);
         }
@@ -44,7 +64,7 @@ class wg_weather extends Widget
             return (['status' => 'error', 'message' => 'URL format invalid']);
         }
         $api_data = file_get_contents($api_url);
-        return (['status' => false, 'message' => 'bypass for direct output', 'data' => json_decode($api_data)]);
+        return (['status' => false, 'message' => 'bypass for direct output', 'data' => array_merge(['unit'=>$setting['units']],json_decode($api_data,true))]);
     }
 
     private function get_http_response_code($url){

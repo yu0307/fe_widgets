@@ -4,29 +4,26 @@ namespace feiron\fe_widgets\lib\stock;
 
 use feiron\fe_widgets\lib\WidgetAbstract as Widget;
 
-class wg_calendar extends Widget
-{
+class wg_calendar extends Widget{
 
     /*
         $viewParameters: 
         Extends @parent:$viewParameters
         Widget specific vars: none
     */
-    public function __construct($viewParameters)
-    {
+    public function __construct($viewParameters){
         //Widget Defaults 
-        $defaultParameters = [
-            'WidgetName' => 'calendar',
-            'Width' => '3',
-            'DataHeight' => 400,
-            'HeaderBackground' => 'bg-transparent',
-            'WidgetBackground' => 'bg-transparent',
-            'HeaderIcon' => false
+        $defaultParameters=[
+            'WidgetName'=>'calendar',
+            'Width'=>'3',
+            'DataHeight'=>'auto',
+            'HeaderIcon'=>"far fa-calendar-alt",
+            'HeaderBackground'=> 'bg-transparent',
+            'WidgetBackground'=> 'bg-transparent',
         ];
         parent::__construct(array_merge($defaultParameters, ($viewParameters ?? [])));
         $this->setView('fe_widgets::stock.wg_calendar');
-        $this->enqueueFooter(asset('/feiron/felaraframe/widgets/wg_calendar.js'));
-        $this->enqueueHeader(asset('/feiron/felaraframe/widgets/css/wg_calendar.css'));
+        $this->enqueueHeader(asset('/feiron/fe_widgets/css/wg_calendar.css'));
     }
 
     public function dataFunction()

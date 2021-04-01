@@ -4,8 +4,8 @@ namespace feiron\fe_widgets;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
-use feiron\fe_widgets\widgets\WidgetProvider;
-use feiron\fe_widgets\widgets\WidgetManager;
+use feiron\fe_widgets\lib\WidgetProvider;
+use feiron\fe_widgets\lib\WidgetManager;
 
 class feWidgetServiceProvider extends ServiceProvider {
 
@@ -22,10 +22,10 @@ class feWidgetServiceProvider extends ServiceProvider {
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
         //publish widget assets
         $this->publishes([
-            __DIR__ . '/assets' => public_path('feiron/' . $PackageName. "/widgets/"),
+            __DIR__ . '/assets' => public_path('feiron/' . $PackageName),
         ], ($PackageName . '_widgets'));
 
-        Blade::component('w-dashboard', feiron\fe_widgets\lib\components\widgetDashBoard::class);
+        Blade::component('w-dashboard', \feiron\fe_widgets\lib\components\widgetDashBoard::class);
         Blade::directive('Widgets', function ($widgetExpression) {
             return "<?=(app()->Widget->BuildWidget($widgetExpression)->render())?>";
         });

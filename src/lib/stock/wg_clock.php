@@ -17,14 +17,15 @@ class wg_clock extends Widget{
             'WidgetName'=>'clock',
             'Width'=>'2',
             'DataHeight'=>300,
-            'HeaderBackground'=> 'bg-transparent',
-            'WidgetBackground'=> 'bg-transparent',
+            // 'HeaderBackground'=> 'bg-transparent',
+            // 'WidgetBackground'=> 'bg-transparent',
             'HeaderIcon'=>false,
             'DisableDigital'=>false
         ];
         parent::__construct(array_merge($defaultParameters, ($viewParameters ?? [])));
         $this->setView('fe_widgets::stock.wg_clock');
-        $this->enqueueFooter(asset('/feiron/felaraframe/widgets/wg_clock.js'));
+        $this->enqueueFooter(asset('/feiron/fe_widgets/js/wg_clock.js'));
+        $this->enqueueHeader(asset('/feiron/fe_widgets/css/wg_clock.css'));
     }
 
     public function dataFunction()

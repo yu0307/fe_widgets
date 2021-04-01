@@ -1,22 +1,33 @@
 @extends('fe_widgets::widgetFrame')
 
 @section('Widget_contents')
-<table class="table table-striped">
+<table class="table table-striped text-center">
+    @isset($config['headers'])
     <thead>
-        @isset($headers)
-            @if(is_array($headers))
+        @if(is_array($config['headers']))
+            <tr>
+                @foreach($config['headers'] as $header)
+                    <th>{{$header}}</th>
+                @endforeach
+            </tr>
+        @else
+            {!!$config['headers']!!}
+        @endif
+    </thead>
+    @endisset
+    
+    <tbody>
+        @if(is_array($config['WidgetData']))
+            @foreach($config['WidgetData'] as $row)
                 <tr>
-                    @foreach($headers as $header)
-                        <th>{{$header}}</th>
+                    @foreach($row as $cell)
+                        <td>{{$cell}}</td>
                     @endforeach
                 </tr>
-            @else
-                {!!$headers!!}
-            @endif
-        @endisset
-    </thead>
-    <tbody>
-        {!!$WidgetData!!}
+            @endforeach
+        @else
+            {!!$config['WidgetData']!!}
+        @endif
     </tbody>
 </table>
 @overwrite

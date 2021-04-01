@@ -11,7 +11,7 @@ class userWidgetLayoutController extends Controller
     
     public function addWidget(Request $request, $WidgetName){
         $layoutItem=app()->WidgetManager->addToLayout(['name'=> $WidgetName, 'setting'=> ($request->input('userSetting') ?? [])]);
-        return response()->json(app()->WidgetManager->renderUserWidget($WidgetName, true, array_merge(($request->input('userSetting') ?? []),['usr_key'=> $layoutItem->id])));
+        return response()->json(app()->WidgetManager->renderUserWidget($WidgetName, true, array_merge(($request->has('userSetting')?['usrSettingValues'=>$request->input('userSetting')]: []),['usr_key'=> $layoutItem->id])));
     }
 
     public function UpdateWidgetLayout(Request $request){

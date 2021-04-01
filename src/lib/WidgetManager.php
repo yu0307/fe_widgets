@@ -2,19 +2,17 @@
 
 namespace feiron\fe_widgets\lib;
 
-use Illuminate\Support\Facades\Auth;
 use feiron\fe_widgets\models\userWidgetLayout;
 
 class WidgetManager {
-    private $app;
     private $AvailableWidgets;  //[WidgetDisplayName]=>Settings['widgetType','Description','widgetParam']
 
     public function __construct(\Illuminate\Foundation\Application $app){
         $this->app = $app;
         $this->AvailableWidgets=[//available generic widgets to users for selection.
             'clock'=>['widgetType' => 'wg_clock', 'Description' => 'showing a clock on the dashboard'],
-            'calendar' => ['widgetType' => 'wg_calendar', 'Description' => 'A simple calendar widget.'],
-            'weather' => ['widgetType' => 'wg_weather', 'Description' => 'A simple widget shows current weather forecast at your location.']
+            'calendar'=>['widgetType' => 'wg_calendar', 'Description' => 'a simple calendar used to only show dates'],
+            'weather'=>['widgetType' => 'wg_weather', 'Description' => 'a lite weight widget shows current weather forecast'],
         ];
         $this->UserWidgetList= $this->UserWidgetSetings=[];
     }
@@ -76,17 +74,33 @@ class WidgetManager {
         ]);
     }
 
+    public function getUserWidgets($user){
+        $widgets=[];
+        foreach($this->loadLayout($user ?? auth()->user()) as $widget){
+            if(!empty($this->AvailableWidgets[$widget->widget_name]) && !empty($this->AvailableWidgets[$widget->widget_name]['widgetType'])){
+                $usrSetting= array_merge(($this->AvailableWidgets[$widget->widget_name]['widgetParam'] ?? []), (json_decode($widget->settings,true) ?? []));
+                $usrSetting['usr_key']= $widget->id;
+                array_push($widgets,app()->Widget->BuildWidget(
+                    $this->AvailableWidgets[$widget->widget_name]['widgetType'], 
+                    $usrSetting
+                )->serializeJson());
+            }
+        }
+        return $widgets;
+    }
+
     public function renderUserWidgets($user){
         $cnt='';
         $SourceList = [];
         foreach($this->loadLayout($user ?? auth()->user()) as $widget){
             if(!empty($this->AvailableWidgets[$widget->widget_name]) && !empty($this->AvailableWidgets[$widget->widget_name]['widgetType'])){
-                $usrSetting= array_merge(($this->AvailableWidgets[$widget->widget_name]['widgetParam'] ?? []), (json_decode($widget->settings,true) ?? []));
+                $usrSetting=($this->AvailableWidgets[$widget->widget_name]['widgetParam'] ?? []);
                 $usrSetting['usr_key']= $widget->id;
                 $Tempwidget=app()->Widget->BuildWidget(
                                                         $this->AvailableWidgets[$widget->widget_name]['widgetType'], 
                                                         $usrSetting
                                                     );
+                $Tempwidget->assignSettingValues((json_decode($widget->settings,true) ?? []));
                 foreach(array_merge($Tempwidget->getHeaderScripts(), $Tempwidget->getFooterScripts()) as $resource){
                     if($resource['duplicate']===false && in_array($resource['file'], $SourceList)){
                         $Tempwidget->removeResource($resource['file']);
@@ -107,15 +121,26 @@ class WidgetManager {
                                                 $this->AvailableWidgets[$userWidgetName]['widgetType'], 
                                                 ($this->AvailableWidgets[$userWidgetName]['widgetParam'] ?? [])
                                             );
-        if(!empty($widgetUserSettings))$widget->UpdateWidgetSettings($widgetUserSettings);
         $Settings=[
-            'scripts' => array_merge($widget->getHeaderScripts(), $widget->getFooterScripts()),
-            'styles' => array_merge($widget->getHeaderStyle(), $widget->getFooterStyle()),
+            'headerscripts'=>$widget->getHeaderScripts(),
+            'headerstyles' => $widget->getHeaderStyle(),
+            'footerscripts'=>$widget->getFooterScripts(),
+            'footerstyles' => $widget->getFooterStyle(),
             'usrSettings'=> $widget->userSettingOutlet()
         ];
+        if(!empty($widgetUserSettings))$widget->UpdateWidgetSettings($widgetUserSettings);
+
+        $jsInit=$widget->render(true)->renderSections();
+        if(array_key_exists('jsInit',$jsInit)){
+            $jsInit=$jsInit['jsInit'];
+        }else{
+            $jsInit='';
+        }
+        
         return (($asResource === false)? $widget->render(): [
             'html' => $widget->render(),
-            'settings' => array_merge($widget->getWidgetSettings(), $Settings)
+            'jsInit'=>$jsInit,
+            'settings' => array_merge($widget->getSettings(), $Settings)
         ]) ;
     }
 }

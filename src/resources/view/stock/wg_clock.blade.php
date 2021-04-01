@@ -8,11 +8,11 @@
             <li class="jquery-clock-min"></li>
             <li class="jquery-clock-hour"></li>
         </ul>
-        @if ($DisableDigital===false)
+        @if ($config['DisableDigital']===false)
             <div class="row wg_clock_digital">
                 <div class="col-md-2"></div>
                 <div class="col-md-8 col-sm-12 m-t-10">
-                    <div class="row f-32 bold" style="font-family: fantasy;">
+                    <div class="row fa-2x bold">
                         <div class="wg_hour col-md-4 p-0 text-center">
                             00
                         </div>

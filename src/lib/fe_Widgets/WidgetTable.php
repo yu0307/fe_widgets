@@ -26,8 +26,13 @@ class WidgetTable extends Widget{
         }
     }
 
+    public function setHeader($headers){
+        $this->viewParameters['headers']=$headers;
+    }
+
     public function setData($data){
         $this->tableData = (is_callable($data)) ? $data() : $data;
+        $this->viewParameters['WidgetData']=$this->tableData;
     }
 
     public function getAjaxData($request){
@@ -42,8 +47,8 @@ class WidgetTable extends Widget{
                 $content='';
                 foreach($this->tableData as $row){
                     $content .= '<tr>';
-                    foreach ($this->viewParameters['headers'] as $idx=>$header) {
-                        $content.='<td>'. $row[$idx].'</td>';
+                    foreach ($row as $cell) {
+                        $content.='<td>'. $cell.'</td>';
                     }
                     $content .= '</tr>';
                 }

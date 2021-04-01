@@ -1,5 +1,8 @@
 <?php
     Route::group(['namespace' => 'feiron\fe_widgets\controller', 'middleware' => ['web']], function () {        
+
+        Route::get('dashboard',function(){return view('fe_widgets::dashboard');})->name('dashboard');
+        
         Route::post('WidgetsAjax/{tarWidget}/{tarControl}', function(\Illuminate\Http\Request $request, $tarWidget, $tarControl){
             return app()->Widget->BuildWidget($tarWidget)->SetID($tarControl)->renderAjax($request);
         })->name('WidgetsAjaxPost');
